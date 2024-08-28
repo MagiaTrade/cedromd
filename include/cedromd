@@ -1,0 +1,6 @@
+#ifndef CEDRO_MD_CEDROMD
+#define CEDRO_MD_CEDROMD
+
+#include "internal/cedromd.h"
+
+#endif //CEDRO_MD_CEDROMD

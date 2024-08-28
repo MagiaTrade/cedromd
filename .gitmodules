@@ -1,0 +1,3 @@
+[submodule "beastboys"]
+	path = beastboys
+	url = https://github.com/MagiaTrade/beastboys.git
