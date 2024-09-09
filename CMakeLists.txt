@@ -8,8 +8,8 @@ option(CMD_BUILD_EXAMPLES "Build the examples" ON)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cedro_md.cmake)
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/env.local.cmake")
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/env.local.cmake)
+if(EXISTS "${CMAKE_SOURCE_DIR}/cmake/env.local.cmake")
+    include(${CMAKE_SOURCE_DIR}/cmake/env.local.cmake)
 else()
     message(FATAL_ERROR "The env.local.cmake file was not found. Please create it from the env.template.cmake. See readme.md for Authentication instructions!")
 endif()
