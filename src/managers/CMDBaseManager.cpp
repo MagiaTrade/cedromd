@@ -21,14 +21,24 @@ namespace cedro::md
 
   CMDBaseManager::~CMDBaseManager()
   {
-    if(_stream)
-      _stream->stop();
-
-    _bqtCallbacks.clear();
-    _sqtCallbacks.clear();
-    _sabCallbacks.clear();
-
+    reset();
     LOG_INFO("CMDBaseManager destructor");
+  }
+
+  void CMDBaseManager::reset()
+  {
+    if(!_stream)
+      return;
+
+    _stream->stop(
+      [&]()
+      {
+        _stream.reset();
+        _bqtCallbacks.clear();
+        _sqtCallbacks.clear();
+        _sabCallbacks.clear();
+        _isConnected = false;
+      });
   }
 
   void CMDBaseManager::subscribeQuote(const std::string& symbol,
@@ -450,6 +460,23 @@ namespace cedro::md
 
         handleConnectionStep(data, stream, cb);
       }, '\n');
+  }
+
+  void CMDBaseManager::disconnect(const SuccessCallback& cb)
+  {
+    if(!_isConnected)
+    {
+      LOG_WARNING("Already disconnected!");
+      return;
+    }
+
+    _messenger->sendMessage(_stream, "quit",
+      [&, cb](bool success)
+      {
+        reset();
+        cb(success);
+      }
+    );
   }
 
   void CMDBaseManager::handleMessage(const char* data, size_t size)

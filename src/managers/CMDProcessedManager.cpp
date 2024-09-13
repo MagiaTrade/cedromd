@@ -24,6 +24,11 @@ namespace cedro::md
     _baseManager->connect(cb);
   }
 
+  void CMDProcessedManager::disconnect(const SuccessCallback & cb)
+  {
+    _baseManager->disconnect(cb);
+  }
+
   void CMDProcessedManager::subscribeQuote(const std::string& symbol,
                       const SQTCallback& cb,
                       bool snapshot)

@@ -20,6 +20,7 @@ public:
 
   bool isConnected() const;
   void connect(const ConnectionCallback& cb);
+  void disconnect(const SuccessCallback& cb);
   void subscribeQuote(const std::string& symbol,
                       const StreamCallback& cb,
                       bool snapshot = false);
@@ -62,6 +63,7 @@ public:
   void setErrorCallback(const ErrorCallback& cb);
 
 private:
+  void reset();
   void sendVAPMessage(const std::string& symbol, const std::string& message, const VAPStreamCallback& cb, const VAPRequestInfo& info);
   bool safetyCheck(const std::string& symbol, const StreamCallback& cb);
   bool safetyCheck(const std::string& symbol, const StreamWithEndFlagCallback& cb);

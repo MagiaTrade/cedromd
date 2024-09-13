@@ -31,6 +31,7 @@ namespace cedro::md
 
     bool isConnected() const;
     void connect(const ConnectionCallback& cb);
+    void disconnect(const SuccessCallback & cb);
 
     void subscribeQuote(const std::string& symbol, const SQTCallback& cb, bool snapshot = false);
     void unsubscribeQuote(const std::string& symbol, const SuccessCallback& cb);
