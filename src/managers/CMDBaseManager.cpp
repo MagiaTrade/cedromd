@@ -33,7 +33,6 @@ namespace cedro::md
     _stream->stop(
       [&]()
       {
-        _stream.reset();
         _bqtCallbacks.clear();
         _sqtCallbacks.clear();
         _sabCallbacks.clear();
