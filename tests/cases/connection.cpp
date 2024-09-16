@@ -40,4 +40,5 @@ TEST_CASE("Connections")
 
     TestHelper::waitForFail(failFuture, streamPtr, 8);
   }
+
 }

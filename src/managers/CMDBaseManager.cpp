@@ -21,8 +21,11 @@ namespace cedro::md
 
   CMDBaseManager::~CMDBaseManager()
   {
-    reset();
     LOG_INFO("CMDBaseManager destructor");
+    _bqtCallbacks.clear();
+    _sqtCallbacks.clear();
+    _sabCallbacks.clear();
+    _isConnected = false;
   }
 
   void CMDBaseManager::reset()
