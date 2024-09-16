@@ -4,7 +4,7 @@
 #include "TestsHelper.h"
 #include <cedromd>
 
-#define SYMBOL_TO_TEST "WDOU24"
+#define SYMBOL_TO_TEST "WDOV24"
 
 TEST_CASE("Processed Subscribe Quote - SQT")
 {

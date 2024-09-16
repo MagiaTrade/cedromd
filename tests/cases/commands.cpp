@@ -4,7 +4,7 @@
 #include "TestsHelper.h"
 #include <cedromd>
 
-#define SYMBOL_TO_TEST "wdou24"
+#define SYMBOL_TO_TEST "wdov24"
 
 TEST_CASE("COMMANDS")
 {
