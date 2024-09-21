@@ -76,7 +76,10 @@ namespace cedro::md
   void CMDBaseManager::unsubscribeQuote(const std::string& symbol, const SuccessCallback& cb)
   {
     if(!safetyCheck(symbol))
-     return;
+    {
+      cb(false);
+      return;
+    }
 
     std::string message = "USQ " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
@@ -125,7 +128,10 @@ namespace cedro::md
   void CMDBaseManager::unsubscribeBookQuote(const std::string& symbol, const SuccessCallback& cb)
   {
     if(!safetyCheck(symbol))
+    {
+      cb(false);
       return;
+    }
 
     std::string message = "UBQ " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
@@ -182,7 +188,10 @@ namespace cedro::md
   void CMDBaseManager::unsubscribeAggBook(const std::string& symbol, const SuccessCallback& cb)
   {
     if(!safetyCheck(symbol))
+    {
+      cb(false);
       return;
+    }
 
     std::string message = "UAB " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
@@ -270,7 +279,10 @@ namespace cedro::md
   void CMDBaseManager::unsubscribeQuoteTrades(const std::string &symbol, const SuccessCallback& cb)
   {
     if(!safetyCheck(symbol))
+    {
+      cb(false);
       return;
+    }
 
     std::string message = "UQT " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
