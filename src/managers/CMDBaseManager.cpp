@@ -460,7 +460,6 @@ namespace cedro::md
       {
         if (!success)
         {
-          LOG_ERROR(data);
           _isConnected = false;
           cb(false, nullptr);
           return;
@@ -481,6 +480,7 @@ namespace cedro::md
     if(!_isConnected)
     {
       LOG_WARNING("Already disconnected!");
+      cb(false);
       return;
     }
 
