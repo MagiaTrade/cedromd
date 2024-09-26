@@ -367,7 +367,7 @@ namespace cedro::md
 
     stm << "VAP " << symbol << "\n";
 
-    VAPRequestInfo info(VAPRequestInfo::NORMAL, symbol);
+    VAPRequestInfo info(VAPRequestInfo::NORMAL,  mgutils::string::toUpper(symbol));
     std::string message = stm.str();
     sendVAPMessage(symbol, message, cb, info);
   }
@@ -389,7 +389,7 @@ namespace cedro::md
       if(isValueSupported) break;
     }
 
-    VAPRequestInfo info(VAPRequestInfo::MINUTE, symbol);
+    VAPRequestInfo info(VAPRequestInfo::MINUTE, mgutils::string::toUpper(symbol));
 
     if(!isValueSupported)
     {
@@ -421,7 +421,7 @@ namespace cedro::md
 
     bool isHistory = !(startDate.empty() || endDate.empty());
 
-    VAPRequestInfo info(VAPRequestInfo::HISTORY, symbol);
+    VAPRequestInfo info(VAPRequestInfo::HISTORY, mgutils::string::toUpper(symbol));
 
     if(!isHistory)
     {
@@ -759,7 +759,7 @@ namespace cedro::md
 
     auto msgType = VAPRequestInfo::determineTypeByFieldCount(data, size, isEndOfMessage);
 
-    VAPRequestInfo info(msgType, symbol);
+    VAPRequestInfo info(msgType, mgutils::string::toUpper(symbol));
 
     auto callbackIter = _vapSnapCallbacks.find(info);
 
