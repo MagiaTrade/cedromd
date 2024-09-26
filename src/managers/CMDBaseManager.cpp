@@ -452,6 +452,7 @@ namespace cedro::md
     if(_isConnected)
     {
       LOG_WARNING("Already connected!");
+      cb(true, _stream);
       return;
     }
 
@@ -530,7 +531,7 @@ namespace cedro::md
     }
     else if ((prefix = std::strstr(data, "SYN")) != nullptr) // SYN
     {
-      LOG_INFO("SYN: Sync message received!");
+      LOG_DEBUG("SYN: Sync message received!");
     }
     else
     {
