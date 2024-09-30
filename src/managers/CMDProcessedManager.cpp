@@ -168,4 +168,9 @@ namespace cedro::md
     });
   }
 
+  void CMDProcessedManager::setErrorCallback(const ErrorCallback& cb)
+  {
+    _baseManager->setErrorCallback(cb);
+  }
+
 }
