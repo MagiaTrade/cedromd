@@ -25,7 +25,7 @@ TEST_CASE("COMMANDS", "[commands]")
 
   manager.setErrorCallback([&](const cedro::md::Error& error, const std::string& msg)
   {
-    LOG_WARNING("Error: " + error.toString() + " Msg: " + msg);
+    logW << ("Error: " + error.toString() + " Msg: " + msg);
   });
 
   SECTION("SQT snapshot")
@@ -47,7 +47,7 @@ TEST_CASE("COMMANDS", "[commands]")
       REQUIRE(endMsg != nullptr);
       REQUIRE(success);
       REQUIRE(size > 250);
-      LOG_INFO(data);
+      logI << (data);
       sendSQTPromise.set_value(success);
       promiseSet = true;
 
@@ -81,7 +81,7 @@ TEST_CASE("COMMANDS", "[commands]")
       REQUIRE(success);
       REQUIRE(size < 100);
 
-      LOG_INFO(data);
+      logI << (data);
 
       sendSQTPromise.set_value(success);
       promiseSet = true;
@@ -125,7 +125,7 @@ TEST_CASE("COMMANDS", "[commands]")
       REQUIRE(startMsg != nullptr);
       REQUIRE(success);
       REQUIRE(size < 100);
-      LOG_INFO(data);
+      logI << (data);
       sendBQTPromise.set_value(success);
       promiseSet = true;
     });
@@ -168,7 +168,7 @@ TEST_CASE("COMMANDS", "[commands]")
       REQUIRE(startMsg != nullptr);
       REQUIRE(success);
       REQUIRE(size < 100);
-      LOG_INFO(data);
+      logI << (data);
       sendSABPromise.set_value(success);
       promiseSet = true;
     });
@@ -210,7 +210,7 @@ TEST_CASE("COMMANDS", "[commands]")
       REQUIRE(startMsg != nullptr);
       REQUIRE(success);
       REQUIRE(size < 100);
-      LOG_INFO(data);
+      logI << (data);
 
       sendGQTPromise.set_value(true);
       promiseSet = true;
@@ -294,7 +294,7 @@ TEST_CASE("COMMANDS", "[commands]")
       {
         auto *startMsg = std::strstr(data, "VAP:");
         REQUIRE(startMsg != nullptr);
-        LOG_INFO(data);
+        logI << (data);
         if (isEndOfMessage)
           promiseVAP.set_value(true);
       }, minutes);
@@ -316,7 +316,7 @@ TEST_CASE("COMMANDS", "[commands]")
       {
         auto *startMsg = std::strstr(data, "VAP:");
         REQUIRE(startMsg != nullptr);
-        LOG_INFO(data);
+        logI << (data);
         if (isEndOfMessage)
           promiseVAP.set_value(true);
       },
@@ -341,7 +341,7 @@ TEST_CASE("COMMANDS", "[commands]")
       {
         auto *startMsg = std::strstr(data, "VAP:");
         REQUIRE(startMsg != nullptr);
-        LOG_INFO(data);
+        logI << (data);
         if (isEndOfMessage)
           promiseVAP.set_value(true);
       },

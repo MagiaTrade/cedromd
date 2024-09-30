@@ -50,7 +50,7 @@ namespace cedro::md::models
 
       if (length <= 10 && msgType == 'E')
       {
-        LOG_INFO("GPN: End of data received for market: " + std::string(market));
+        logI << ("GPN: End of data received for market: " + std::string(market));
         return;
       }
 

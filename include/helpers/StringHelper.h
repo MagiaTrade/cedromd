@@ -85,7 +85,7 @@ namespace cedro::md
     currentPos = std::strchr(currentPos, delimiter);
     if (currentPos == nullptr)
     {
-      LOG_ERROR(errorMessage);
+      logE << (errorMessage);
       return false;
     }
 

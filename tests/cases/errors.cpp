@@ -31,7 +31,7 @@ TEST_CASE("Errors handling")
     manager.setErrorCallback([&](const cedro::md::Error& error, const std::string& msg)
     {
        REQUIRE((error == expectedError));
-       LOG_INFO("Error: " + error.toString() + " Msg: " + msg);
+      logI << ("Error: " + error.toString() + " Msg: " + msg);
        errorPromise.set_value(true);
     });
 
@@ -72,7 +72,7 @@ TEST_CASE("Errors handling")
     manager.setErrorCallback([&](const cedro::md::Error& error, const std::string& msg)
     {
       REQUIRE(error == cedro::md::Error::DOUBLE_CONNECTION);
-      LOG_INFO("Error: " + error.toString() + " Msg: " + msg);
+      logI << ("Error: " + error.toString() + " Msg: " + msg);
       errorPromise.set_value(true);
     });
 

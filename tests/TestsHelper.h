@@ -20,7 +20,7 @@ public:
       REQUIRE(streamPtr->isOpen());
     } else
     {
-      LOG_ERROR("Timeout waiting for connection callback.");
+      logE << ("Timeout waiting for connection callback.");
       REQUIRE(false); // Force test failure on timeout
     }
 
@@ -35,7 +35,7 @@ public:
       REQUIRE(streamPtr == nullptr);
     } else
     {
-      LOG_ERROR("Timeout waiting for connection callback.");
+      logE << ("Timeout waiting for connection callback.");
       REQUIRE(false); // Force test failure on timeout
     }
   }

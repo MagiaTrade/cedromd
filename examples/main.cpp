@@ -26,14 +26,14 @@ int main()
 //  manager.subscribeQuote("WINQ24",
 //  [&](bool success, const char* data, size_t size)
 //  {
-//    LOG_INFO(std::string(data, size));
+//    logI << (std::string(data, size));
 //  }, false);
 //
 //  manager.subscribeQuote("WDOU24",
 //  [&](bool success, const char* data, size_t size)
 //  {
 ////    model.parseSQTMessage(data, size);
-//    LOG_INFO(std::string(data, size));
+//    logI << (std::string(data, size));
 //  }, false);
 //
 //  std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -43,13 +43,13 @@ int main()
 //  manager.subscribeBookQuote("WINQ24",
 //  [&](bool success, const char* data, size_t size)
 //  {
-//   LOG_INFO(std::string(data, size));
+//   logI << (std::string(data, size));
 //  });
 //
 //  manager.subscribeBookQuote("WDOU24",
 //  [&](bool success, const char* data, size_t size)
 //  {
-//    LOG_INFO(std::string(data, size));
+//    logI << (std::string(data, size));
 //  });
 //
 //  std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -57,7 +57,7 @@ int main()
 //  manager.getPlayerNames("bmf", true,
 //  [](bool success, const char* data, size_t size)
 //  {
-//    LOG_INFO(std::string(data, size));
+//    logI << (std::string(data, size));
 //  });
 
 //  manager.unsubscribeBookQuote("WINQ24");
@@ -66,7 +66,7 @@ int main()
 //  manager.subscribeAggBook("WDOU24",
 //  [&](bool success, const char* data, size_t size)
 //  {
-//   LOG_INFO(std::string(data, size));
+//   logI << (std::string(data, size));
 //  });
 //
 //  std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -74,7 +74,7 @@ int main()
 //  manager.subscribeAggBook("WINQ24",
 //   [&](bool success, const char* data, size_t size)
 //   {
-//     LOG_INFO(std::string(data, size));
+//     logI << (std::string(data, size));
 //   });
 //
 //  std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -88,7 +88,7 @@ int main()
   {
     std::stringstream stm;
     stm << "STREAM: " << std::string(data, size);
-    LOG_INFO(stm.str());
+    logI << (stm.str());
   });
 //
   std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -97,28 +97,28 @@ int main()
   {
     std::stringstream stm;
     stm << "SNAP: " << " isLast: " << isLastMsg << " " << std::string(data, size);
-    LOG_INFO(stm.str());
+    logI << (stm.str());
   },0);
 
   manager.snapshotQuoteTrades("WDOU24", 100, [&](bool success, const char *data, size_t size, bool isLastMsg)
   {
     std::stringstream stm;
     stm << "SNAP1: " << " isLast: " << isLastMsg << " " << std::string(data, size);
-    LOG_INFO(stm.str());
+    logI << (stm.str());
   },100);
 
   manager.snapshotQuoteTrades("WDOU24", 100, [&](bool success, const char *data, size_t size, bool isLastMsg)
   {
     std::stringstream stm;
     stm << "SNAP2: " << " isLast: " << isLastMsg << " " << std::string(data, size);
-    LOG_INFO(stm.str());
+    logI << (stm.str());
   },200);
 
   manager.snapshotQuoteTrades("WDOU24", 100, [&](bool success, const char *data, size_t size, bool isLastMsg)
   {
     std::stringstream stm;
     stm << "SNAP3: " << " isLast: " << isLastMsg << " " << std::string(data, size);
-    LOG_INFO(stm.str());
+    logI << (stm.str());
   },300);
 
 //  std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -61,7 +61,7 @@ namespace cedro::md::models
       const char* secondColon = std::strchr(firstColon + 1, ':');
       if (msgType == 'E' && secondColon == nullptr)
       {
-        LOG_INFO("GQT: End of initial stream data received for symbol: " + std::string(symbol));
+        logI << ("GQT: End of initial stream data received for symbol: " + std::string(symbol));
         return;
       }
 
@@ -102,7 +102,7 @@ namespace cedro::md::models
         currentPos = std::strchr(currentPos, ':');
         if (currentPos == nullptr)
         {
-          LOG_ERROR("GQT: Unexpected end of data.");
+          logE << ("GQT: Unexpected end of data.");
           return false;
         }
         currentPos++; // Skips the ':'

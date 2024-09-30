@@ -39,6 +39,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     beast_boys
 )
 
+set(BUILD_BB_TESTS ON)
+
 if (${CMD_BUILD_TESTS})
     add_subdirectory(tests)
 endif()

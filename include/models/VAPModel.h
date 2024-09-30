@@ -60,7 +60,7 @@ namespace cedro::md::models
 
       if (length <= 40 && msgType == 'E')
       {
-        LOG_INFO("VAP: End of snapshot data received for symbol: " + std::string(symbol));
+        logI << ("VAP: End of snapshot data received for symbol: " + std::string(symbol));
         return;
       }
 

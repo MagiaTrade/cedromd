@@ -48,7 +48,7 @@ namespace cedro::md::models
 
       if (msgType == 'E')
       {
-        LOG_INFO("SAB: End of initial data received for symbol: " + std::string(symbol));
+        logI << ("SAB: End of initial data received for symbol: " + std::string(symbol));
         return;
       }
 
@@ -90,7 +90,7 @@ namespace cedro::md::models
         currentPos = std::strchr(currentPos, ':');
         if (currentPos == nullptr)
         {
-          LOG_ERROR("SAB: Unexpected end of data.");
+          logE << ("SAB: Unexpected end of data.");
           return false;
         }
 
@@ -139,7 +139,7 @@ namespace cedro::md::models
           break;
         }
         default:
-          LOG_ERROR("SAB: Unknown message type received.");
+          logE << ("SAB: Unknown message type received.");
           break;
       }
     }

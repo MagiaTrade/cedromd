@@ -365,7 +365,7 @@ namespace cedro::md::models
       {
         std::stringstream stm;
         stm << "SQT ID not supported: " << fieldId << "\n";
-        LOG_ERROR(stm.str());
+        logE << (stm.str());
         return;
       }
 
@@ -377,7 +377,7 @@ namespace cedro::md::models
       {
         std::stringstream stm;
         stm << "SQT ID not supported: " << fieldId << "\n";
-        LOG_ERROR(stm.str());
+        logE << (stm.str());
         return;
       }
 
@@ -387,7 +387,7 @@ namespace cedro::md::models
       {
         std::stringstream stm;
         stm << "SQT ID not supported: " << fieldId << "\n";
-        LOG_ERROR(stm.str());
+        logE << (stm.str());
         return;
       }
 

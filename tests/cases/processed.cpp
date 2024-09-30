@@ -671,7 +671,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //      else
 //      {
 //        REQUIRE(model.msgType == 'E');
-//        LOG_INFO("VAP snapshot normal: End of messages received");
+//        logI << ("VAP snapshot normal: End of messages received");
 //        sendVAPPromise.set_value(success);
 //        promiseSet = true;
 //      }
@@ -716,7 +716,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //      else
 //      {
 //        REQUIRE(model.msgType == 'E');
-//        LOG_INFO("VAP snapshot minute: End of messages received");
+//        logI << ("VAP snapshot minute: End of messages received");
 //        sendVAPPromise.set_value(success);
 //        promiseSet = true;
 //      }
@@ -763,7 +763,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //     else
 //     {
 //       REQUIRE(model.msgType == 'E');
-//       LOG_INFO("VAP snapshot history: End of messages received");
+//       logI << ("VAP snapshot history: End of messages received");
 //       sendVAPPromise.set_value(success);
 //       promiseSet = true;
 //     }
@@ -797,7 +797,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
       else
       {
         REQUIRE(model.msgType == 'E');
-        LOG_INFO("GPN: End of messages received");
+        logI << ("GPN: End of messages received");
         sendGPNPromise.set_value(success);
         promiseSet = true;
       }

@@ -53,7 +53,7 @@ namespace cedro::md::models
 
       if (msgType == 'E')
       {
-        LOG_INFO("End of initial data received for symbol: " + std::string(symbol));
+        logI << ("End of initial data received for symbol: " + std::string(symbol));
         return;
       }
 
@@ -95,7 +95,7 @@ namespace cedro::md::models
         currentPos = std::strchr(currentPos, ':');
         if (currentPos == nullptr)
         {
-          LOG_ERROR("BQT: Unexpected end of data.");
+          logE << ("BQT: Unexpected end of data.");
           return false;
         }
 
@@ -109,7 +109,7 @@ namespace cedro::md::models
         {
           if(!toInt(position, currentPos))
           {
-            LOG_ERROR("BQT: Msg(A) - Position parse error.");
+            logE << ("BQT: Msg(A) - Position parse error.");
             break;
           }
 
@@ -123,7 +123,7 @@ namespace cedro::md::models
 
           if (!toDouble(price, currentPos))
           {
-            LOG_ERROR("BQT: Msg(A) - Price parse error.");
+            logE << ("BQT: Msg(A) - Price parse error.");
             break;
           }
 
@@ -132,7 +132,7 @@ namespace cedro::md::models
 
           if (!toInt(quantity, currentPos))
           {
-            LOG_ERROR("BQT: Msg(A) - Quantity parse error.");
+            logE << ("BQT: Msg(A) - Quantity parse error.");
             break;
           }
 
@@ -141,7 +141,7 @@ namespace cedro::md::models
 
           if (!toInt(broker, currentPos))
           {
-            LOG_ERROR("BQT: Msg(A) - Broker parse error.");
+            logE << ("BQT: Msg(A) - Broker parse error.");
             break;
           }
 
@@ -168,7 +168,7 @@ namespace cedro::md::models
         {
           if(!toInt(position, currentPos))
           {
-            LOG_ERROR("BQT: Msg(U) - Position parse error.");
+            logE << ("BQT: Msg(U) - Position parse error.");
             break;
           }
 
@@ -177,7 +177,7 @@ namespace cedro::md::models
 
           if(!toInt(oldPosition, currentPos))
           {
-            LOG_ERROR("BQT: Msg(U) - OldPosition parse error.");
+            logE << ("BQT: Msg(U) - OldPosition parse error.");
             break;
           }
 
@@ -191,7 +191,7 @@ namespace cedro::md::models
 
           if (!toDouble(price, currentPos))
           {
-            LOG_ERROR("BQT: Msg(U) - Price parse error.");
+            logE << ("BQT: Msg(U) - Price parse error.");
             break;
           }
 
@@ -200,7 +200,7 @@ namespace cedro::md::models
 
           if (!toInt(quantity, currentPos))
           {
-            LOG_ERROR("BQT: Msg(U) - Quantity parse error.");
+            logE << ("BQT: Msg(U) - Quantity parse error.");
             break;
           }
 
@@ -209,7 +209,7 @@ namespace cedro::md::models
 
           if (!toInt(broker, currentPos))
           {
-            LOG_ERROR("BQT: Msg(U) - Broker parse error.");
+            logE << ("BQT: Msg(U) - Broker parse error.");
             break;
           }
 
@@ -236,7 +236,7 @@ namespace cedro::md::models
         {
           if (!toInt(cancelType, currentPos))
           {
-            LOG_ERROR("BQT: Msg(D) - CancelType parse error.");
+            logE << ("BQT: Msg(D) - CancelType parse error.");
             break;
           }
 
@@ -253,7 +253,7 @@ namespace cedro::md::models
 
           if (!toInt(position, currentPos))
           {
-            LOG_ERROR("BQT: Msg(D) - Position parse error.");
+            logE << ("BQT: Msg(D) - Position parse error.");
             break;
           }
 
