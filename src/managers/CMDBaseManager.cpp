@@ -83,7 +83,7 @@ namespace cedro::md
 
     std::string message = "USQ " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
-    [&, cb](bool success)
+    [&, cb, symbol](bool success)
     {
       if (!success)
       {
@@ -135,7 +135,7 @@ namespace cedro::md
 
     std::string message = "UBQ " + symbol + "\n";
     _messenger->sendMessage(_stream, message,
-    [&, cb](bool success)
+    [&, cb, symbol](bool success)
     {
       if (!success)
       {
@@ -862,7 +862,7 @@ namespace cedro::md
   void CMDBaseManager::sendSoftKey(const std::shared_ptr<bb::network::rs::Stream>& stream,
                                    const ConnectionCallback &cb) const
   {
-    _messenger->sendMessage(stream, _softKey + "\n", [&](bool success)
+    _messenger->sendMessage(stream, _softKey + "\n", [&, cb](bool success)
     {
       if (!success)
       {
@@ -879,7 +879,7 @@ namespace cedro::md
   void CMDBaseManager::sendUsername(const std::shared_ptr<bb::network::rs::Stream>& stream,
                                     const ConnectionCallback &cb) const
   {
-    _messenger->sendMessage(stream, _username + "\n", [&](bool success)
+    _messenger->sendMessage(stream, _username + "\n", [&,cb](bool success)
     {
       if (!success)
       {
@@ -896,7 +896,7 @@ namespace cedro::md
   void CMDBaseManager::sendPassword(const std::shared_ptr<bb::network::rs::Stream>& stream,
                                     const ConnectionCallback &cb) const
   {
-    _messenger->sendMessage(stream, _password + "\n", [&](bool success)
+    _messenger->sendMessage(stream, _password + "\n", [&, cb](bool success)
     {
       if (!success)
       {
