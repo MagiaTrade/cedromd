@@ -70,6 +70,8 @@ namespace cedro::md
     void getPlayerNames(const std::string& marketName, bool sortedByName, const GPNCallbackWithEndFlag& cb);
 
     void setErrorCallback(const ErrorCallback& cb);
+    void setHeartBeatCallback(const HeartBeatCallback& cb);
+
 
   private:
     std::unique_ptr<CMDBaseManager> _baseManager;

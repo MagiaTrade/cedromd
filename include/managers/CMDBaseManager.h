@@ -62,6 +62,8 @@ public:
 
   void setErrorCallback(const ErrorCallback& cb);
 
+  void setHeartBeatCallback(const HeartBeatCallback& cb);
+
 private:
   void reset();
   void sendVAPMessage(const std::string& symbol, const std::string& message, const VAPStreamCallback& cb, const VAPRequestInfo& info);
@@ -110,6 +112,8 @@ private:
   std::unordered_map<std::string, StreamWithEndFlagCallback> _gqtSnapCallbacks;
   std::unordered_map<std::string, StreamWithEndFlagCallback> _gpnCallbacks;
   std::unordered_map<VAPRequestInfo, VAPStreamCallback, VAPRequestInfoHash> _vapSnapCallbacks;
+
+  HeartBeatCallback _heartBeatCallback{nullptr};
 
   /**
    * Helper method to extract symbol for

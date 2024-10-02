@@ -229,6 +229,7 @@ namespace cedro::md
   using ConnectionCallback = std::function<void(bool, const std::shared_ptr<bb::network::rs::Stream>&)>;
   using StreamCallback = std::function<void(bool, const char* data, size_t size)>;
   using StreamWithEndFlagCallback = std::function<void(bool, const char* data, size_t size, bool isLast)>;
+  using HeartBeatCallback = std::function<void(void)>;
 
   using VAPStreamCallback = std::function<void(bool, const char* data, size_t size, bool isLast, VAPRequestInfo::Type requestedType)>;
 

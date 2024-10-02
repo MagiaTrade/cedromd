@@ -532,6 +532,8 @@ namespace cedro::md
     else if ((prefix = std::strstr(data, "SYN")) != nullptr) // SYN
     {
       logD << ("SYN: Sync message received!");
+      if(_heartBeatCallback)
+        _heartBeatCallback();
     }
     else
     {
@@ -1015,4 +1017,10 @@ namespace cedro::md
   {
     _errorCallback = cb;
   }
+
+  void CMDBaseManager::setHeartBeatCallback(const HeartBeatCallback& cb)
+  {
+    _heartBeatCallback = cb;
+  }
+
 }

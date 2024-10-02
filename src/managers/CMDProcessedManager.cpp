@@ -173,4 +173,8 @@ namespace cedro::md
     _baseManager->setErrorCallback(cb);
   }
 
+  void CMDProcessedManager::setHeartBeatCallback(const HeartBeatCallback& cb)
+  {
+    _baseManager->setHeartBeatCallback(cb);
+  }
 }
