@@ -27,7 +27,7 @@ namespace cedro::md
   {
   public:
     CMDProcessedManager(const std::string& username, const std::string& password, const std::string& softKey = "");
-    ~CMDProcessedManager();
+    virtual ~CMDProcessedManager();
 
     bool isConnected() const;
     void connect(const ConnectionCallback& cb);
