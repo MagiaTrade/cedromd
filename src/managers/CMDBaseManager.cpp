@@ -39,7 +39,6 @@ namespace cedro::md
         _bqtCallbacks.clear();
         _sqtCallbacks.clear();
         _sabCallbacks.clear();
-        _isConnected = false;
       });
   }
 
@@ -488,6 +487,7 @@ namespace cedro::md
     _messenger->sendMessage(_stream, "quit",
       [&, cb](bool success)
       {
+        _isConnected = false;
         reset();
         cb(success);
       }
