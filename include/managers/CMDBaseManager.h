@@ -96,6 +96,7 @@ private:
 
   inline static const std::string FEED_URL_1 = "datafeed1.cedrotech.com";
   inline static const std::string FEED_URL_2 = "datafeed2.cedrotech.com";
+  bool switchURL = true;
   inline static const std::string PORT_NUMBER = "81";
 
   std::string _username;
