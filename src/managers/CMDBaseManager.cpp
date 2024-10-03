@@ -462,7 +462,7 @@ namespace cedro::md
         if (!success)
         {
           _isConnected = false;
-          cb(false, nullptr);
+          cb(false, stream);
           return;
         }
 
