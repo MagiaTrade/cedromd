@@ -72,6 +72,11 @@ namespace cedro::md
     void setErrorCallback(const ErrorCallback& cb);
     void setHeartBeatCallback(const HeartBeatCallback& cb);
 
+    // Tests purposes only
+    void setUseTestURL()
+    {
+      _baseManager->setUseTestURL();
+    }
 
   private:
     std::unique_ptr<CMDBaseManager> _baseManager;

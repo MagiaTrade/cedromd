@@ -456,7 +456,10 @@ namespace cedro::md
     }
 
     switchURL = !switchURL;
-    auto stream = _streamer->openStream(switchURL ? FEED_URL_1 : FEED_URL_2, PORT_NUMBER, "",
+    auto url = _shouldUseTestURL ? FEED_URL_TESTS :  (switchURL ? FEED_URL_1 : FEED_URL_2);
+    auto portNumber = _shouldUseTestURL ? "1234" : PORT_NUMBER;
+
+    auto stream = _streamer->openStream(url, portNumber, "",
       [&, cb](bool success, const char* data, size_t size, auto stream)
       {
         if (!success)

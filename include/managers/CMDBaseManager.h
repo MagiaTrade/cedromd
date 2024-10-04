@@ -64,6 +64,12 @@ public:
 
   void setHeartBeatCallback(const HeartBeatCallback& cb);
 
+  // Tests purposes only
+  void setUseTestURL()
+  {
+    _shouldUseTestURL = true;
+  }
+
 private:
   void reset();
   void sendVAPMessage(const std::string& symbol, const std::string& message, const VAPStreamCallback& cb, const VAPRequestInfo& info);
@@ -96,6 +102,7 @@ private:
 
   inline static const std::string FEED_URL_1 = "datafeed1.cedrotech.com";
   inline static const std::string FEED_URL_2 = "datafeed2.cedrotech.com";
+  inline static const std::string FEED_URL_TESTS = "localhost";
   bool switchURL = true;
   inline static const std::string PORT_NUMBER = "81";
 
@@ -144,6 +151,8 @@ private:
   char _vapBuffer[VAP_BUFFER_SIZE];
 
   ErrorCallback _errorCallback{nullptr};
+
+  bool _shouldUseTestURL = false;
 
 };
 
