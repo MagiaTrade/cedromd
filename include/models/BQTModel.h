@@ -12,11 +12,10 @@
 #include <iostream>
 #include <sstream>
 #include "CMDTypes.h"
+#include "ParseHelper.h"
 
 namespace cedro::md::models
 {
-
-
   class BQTModel
   {
   public:
@@ -60,104 +59,68 @@ namespace cedro::md::models
       // Move to after msgType column ':'
       const char* currentPos = firstColon + 3;
 
-      auto toInt = [](int32_t &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        long value = std::strtol(inStart, &outEnd, 10);
-
-        if (value == INVALID_INT32 || outEnd == inStart)
-        {
-          out = INVALID_INT32;
-          return false;
-        }
-
-        out = static_cast<int32_t>(value);
-        return true;
-      };
-
-      auto toDouble = [](double &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        double value = std::strtod(inStart, &outEnd);
-
-        if (std::isnan(value) || outEnd == inStart)
-        {
-          out = dNaN;
-          return false;
-        }
-
-        out = value;
-        return true;
-      };
-
-      auto moveOn = [](const char*& currentPos) -> bool
-      {
-        currentPos = std::strchr(currentPos, ':');
-        if (currentPos == nullptr)
-        {
-          logE << ("BQT: Unexpected end of data.");
-          return false;
-        }
-
-        currentPos++; // Skips the ':'
-        return true;
-      };
-
       switch (msgType)
       {
         case 'A': // Add order
         {
-          if(!toInt(position, currentPos))
+          if(!ParseHelper::toInt(position, currentPos))
           {
             logE << ("BQT: Msg(A) - Position parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           direction = *currentPos++;
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toDouble(price, currentPos))
+          if (!ParseHelper::toDouble(price, currentPos))
           {
             logE << ("BQT: Msg(A) - Price parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toInt(quantity, currentPos))
+          if (!ParseHelper::toInt(quantity, currentPos))
           {
             logE << ("BQT: Msg(A) - Quantity parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toInt(broker, currentPos))
+          if (!ParseHelper::toInt(broker, currentPos))
           {
             logE << ("BQT: Msg(A) - Broker parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          // Parse datetime
-          std::strncpy(datetime, currentPos, MAX_STRING_SIZE);
+          if (!ParseHelper::copyUntilDelimiter(datetime, currentPos, MAX_STRING_SIZE))
+          {
+            logE << ("BQT: Msg(A) - Datetime parse error.");
+            break;
+          }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           // Parse orderID
-          std::strncpy(orderID, currentPos, MAX_STRING_SIZE);
+          if (!ParseHelper::copyUntilDelimiter(orderID, currentPos, MAX_STRING_SIZE))
+          {
+            logE << ("BQT: Msg(A) - orderID parse error.");
+            break;
+          }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           offerType = *currentPos;
@@ -166,66 +129,74 @@ namespace cedro::md::models
         }
         case 'U': // Modify order
         {
-          if(!toInt(position, currentPos))
+          if(!ParseHelper::toInt(position, currentPos))
           {
             logE << ("BQT: Msg(U) - Position parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if(!toInt(oldPosition, currentPos))
+          if(!ParseHelper::toInt(oldPosition, currentPos))
           {
             logE << ("BQT: Msg(U) - OldPosition parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           direction = *currentPos++;
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toDouble(price, currentPos))
+          if (!ParseHelper::toDouble(price, currentPos))
           {
             logE << ("BQT: Msg(U) - Price parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toInt(quantity, currentPos))
+          if (!ParseHelper::toInt(quantity, currentPos))
           {
             logE << ("BQT: Msg(U) - Quantity parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toInt(broker, currentPos))
+          if (!ParseHelper::toInt(broker, currentPos))
           {
             logE << ("BQT: Msg(U) - Broker parse error.");
             break;
           }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           // Parse datetime
-          std::strncpy(datetime, currentPos, MAX_STRING_SIZE);
+          if (!ParseHelper::copyUntilDelimiter(datetime, currentPos, MAX_STRING_SIZE))
+          {
+            logE << ("BQT: Msg(U) - datetime parse error.");
+            break;
+          }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           // Parse orderID
-          std::strncpy(orderID, currentPos, MAX_STRING_SIZE);
+          if (!ParseHelper::copyUntilDelimiter(orderID, currentPos, MAX_STRING_SIZE))
+          {
+            logE << ("BQT: Msg(U) - orderID parse error.");
+            break;
+          }
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           offerType = *currentPos;
@@ -234,7 +205,7 @@ namespace cedro::md::models
         }
         case 'D': // Delete order
         {
-          if (!toInt(cancelType, currentPos))
+          if (!ParseHelper::toInt(cancelType, currentPos))
           {
             logE << ("BQT: Msg(D) - CancelType parse error.");
             break;
@@ -243,15 +214,15 @@ namespace cedro::md::models
           if(cancelType == 3)
             break;
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
           direction = *currentPos++;
 
-          if(!moveOn(currentPos))
+          if(!ParseHelper::moveOn(currentPos))
             break;
 
-          if (!toInt(position, currentPos))
+          if (!ParseHelper::toInt(position, currentPos))
           {
             logE << ("BQT: Msg(D) - Position parse error.");
             break;

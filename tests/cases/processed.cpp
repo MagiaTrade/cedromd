@@ -8,14 +8,14 @@
 
 TEST_CASE("Processed Subscribe Quote - SQT")
 {
-  cedro::md::CMDProcessedManager manager(CEDRO_USERNAME, CEDRO_PASSWORD, CEDRO_SOFTKEY);
+  auto manager = std::make_shared<cedro::md::CMDProcessedManager>(CEDRO_USERNAME, CEDRO_PASSWORD, CEDRO_SOFTKEY);
 
   std::promise<bool> sendPromise;
   std::future<bool> sendFuture = sendPromise.get_future();
 
   std::shared_ptr<bb::network::rs::Stream> streamPtr;
 
-  manager.connect([&](bool success, const std::shared_ptr<bb::network::rs::Stream> &stream)
+  manager->connect([&](bool success, const std::shared_ptr<bb::network::rs::Stream> &stream)
   {
     streamPtr = stream;
     sendPromise.set_value(success);
@@ -23,330 +23,355 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 
   TestHelper::waitForSuccess(sendFuture, streamPtr, 3);
 
+  auto disconnectManager = [manager]()
+  {
+    auto sendPromise = std::make_shared<std::promise<bool>>() ;
+    std::future<bool> sendFuture = sendPromise->get_future();
+    auto promiseSet = std::make_shared<bool>(false);
 
-//
-//  auto checkSQTModel = [](const cedro::md::models::SQTModel& model)
-//  {
-//    REQUIRE(strcmp(model.symbol, "") != 0);
-//
-//    // Verificações de todas as variáveis da estrutura SQTModel
-//
-//    // Header
-//    REQUIRE(strcmp(model.symbol, "") != 0);
-//    REQUIRE(strcmp(model.time, "") != 0);
-//
-//    // Campos principais
-////        REQUIRE(strcmp(model.lastModTime, "") != 0);             //not coming
-//    REQUIRE(strcmp(model.lastModDate, "") != 0);
-//    REQUIRE(!std::isnan(model.lastTradePrice));
-//    REQUIRE(!std::isnan(model.bestBidPrice));
-//    REQUIRE(!std::isnan(model.bestAskPrice));
-//    REQUIRE(strcmp(model.lastTradeTime, "") != 0);
-//    REQUIRE(model.currentTradeSize != INVALID_INT32);
-//    REQUIRE(model.lastTradeSize != INVALID_INT32);
-//    REQUIRE(model.totalTrades != INVALID_INT32);
-//    REQUIRE(model.totalVolume != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.totalFinancialVolume));
-//    REQUIRE(!std::isnan(model.highestPriceOfDay));
-//    REQUIRE(!std::isnan(model.lowestPriceOfDay));
-//    REQUIRE(!std::isnan(model.previousDayClosePrice));
-//    REQUIRE(!std::isnan(model.openingPrice));
-//    REQUIRE(strcmp(model.bestBidTime, "") != 0);
-//    REQUIRE(strcmp(model.bestAskTime, "") != 0);
-//    REQUIRE(!std::isnan(model.bestBidVolume));
-//    REQUIRE(!std::isnan(model.bestAskVolume));
-//    REQUIRE(model.bestBidSize != INVALID_INT32);
-//    REQUIRE(model.bestAskSize != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.variation));
-//    REQUIRE(!std::isnan(model.lastWeekClosePrice));
-//    REQUIRE(!std::isnan(model.lastMonthClosePrice));
-//    REQUIRE(!std::isnan(model.lastYearClosePrice));
-//    REQUIRE(!std::isnan(model.previousDayOpeningPrice));
-//    REQUIRE(!std::isnan(model.previousDayHighestPrice));
-//    REQUIRE(!std::isnan(model.previousDayLowestPrice));
-//    REQUIRE(!std::isnan(model.averagePrice));
-//    REQUIRE(!std::isnan(model.vhDaily));
-//    REQUIRE(model.marketCode != INVALID_INT32);
-//    REQUIRE(model.assetType != INVALID_INT32);
-//    REQUIRE(model.standardLot != INVALID_INT32);
-//    REQUIRE(strcmp(model.assetDescription, "") != 0);
-//    REQUIRE(strcmp(model.classificationName, "") != 0);
-//    REQUIRE(model.quoteForm != INVALID_INT32);
-//    REQUIRE(strcmp(model.intradayDate, "") != 0);
-//    REQUIRE(strcmp(model.lastTradeDate, "") != 0);
-//    REQUIRE(strcmp(model.shortAssetDescription, "") != 0);
-//    REQUIRE(strcmp(model.canceledTradeId, "") != 0);
-//    REQUIRE(strcmp(model.lastTradeDateSimple, "") != 0);
-//    REQUIRE(model.openingUnfulfilledSide != 'x');
-//    REQUIRE(model.openingUnfulfilledSize != INVALID_INT32);
-//    REQUIRE(strcmp(model.scheduledOpeningTime, "") != 0);
-//    REQUIRE(strcmp(model.rescheduledOpeningTime, "") != 0);
-//    REQUIRE(model.bestBidBroker != INVALID_INT32);
-//    REQUIRE(model.bestAskBroker != INVALID_INT32);
-//    REQUIRE(model.lastBuyBroker != INVALID_INT32);
-//    REQUIRE(model.lastSellBroker != INVALID_INT32);
-//    REQUIRE(strcmp(model.optionExpirationDate, "") != 0);
-//    REQUIRE(model.expired != INVALID_INT8);
-//    REQUIRE(strcmp(model.totalPapers, "") != 0);
-//    REQUIRE(model.instrumentStatus != INVALID_INT32);
-//    REQUIRE(model.optionType != '\0');
-//    REQUIRE(model.optionDirection != '\0');
-//    REQUIRE(strcmp(model.parentSymbol, "") != 0);
-//    REQUIRE(!std::isnan(model.theoreticalOpeningPrice));
-//    REQUIRE(model.theoreticalSize != INVALID_INT32);
-//    REQUIRE(model.assetStatus != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.strikePrice));
-//    REQUIRE(!std::isnan(model.diffPrice));
-//    REQUIRE(strcmp(model.previousDay, "") != 0);
-//    REQUIRE(strcmp(model.assetGroupPhase, "") != 0);
-//    //      REQUIRE(!std::isnan(model.previousDayAveragePrice));    //not coming
-//    //      REQUIRE(!std::isnan(model.marginRange));                //not coming
-//    REQUIRE(!std::isnan(model.averageVolume20Days));
-//    REQUIRE(!std::isnan(model.marketCapitalization));
-//    REQUIRE(strcmp(model.marketType, "") != 0);
-//    REQUIRE(!std::isnan(model.weekCloseVariation));
-//    REQUIRE(!std::isnan(model.monthCloseVariation));
-//    REQUIRE(!std::isnan(model.yearCloseVariation));
-//    REQUIRE(model.openContracts != INVALID_INT32);
-//    REQUIRE(model.businessDaysToExpiry != INVALID_INT32);
-//    REQUIRE(model.daysToExpiry != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.adjustmentPrice));
-//    REQUIRE(!std::isnan(model.previousDayAdjustmentPrice));
-//    REQUIRE(strcmp(model.securityId, "") != 0);
-//    REQUIRE(strcmp(model.tickDirection, "") != 0);
-//    REQUIRE(!std::isnan(model.tunnelUpperLimit));
-//    REQUIRE(!std::isnan(model.tunnelLowerLimit));
-//    REQUIRE(strcmp(model.tradingPhase, "") != 0);
-//    REQUIRE(model.tickSize != INVALID_INT32);
-//    REQUIRE(model.minTradeVolume != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.minPriceIncrement));
-//    REQUIRE(model.minOfferSize != INVALID_INT32);
-//    REQUIRE(model.maxOfferSize != INVALID_INT32);
-//    REQUIRE(model.uniqueInstrumentId != INVALID_INT32);
-//    REQUIRE(strcmp(model.currency, "") != 0);
-//    REQUIRE(strcmp(model.securityType, "") != 0);
-//    REQUIRE(strcmp(model.securitySubType, "") != 0);
-//    REQUIRE(model.associatedProduct != INVALID_INT32);
-//    REQUIRE(strcmp(model.expiryMonthYear, "") != 0);
-//    REQUIRE(!std::isnan(model.optionStrikePrice));
-//    REQUIRE(strcmp(model.optionCurrency, "") != 0);
-//    REQUIRE(!std::isnan(model.contractMultiplier));
-//    REQUIRE(model.priceType != INVALID_INT32);
-//    REQUIRE(strcmp(model.endOfTradeTime, "") != 0);
-//    REQUIRE(strcmp(model.assetGroup, "") != 0);
-//    REQUIRE(!std::isnan(model.currentAdjustmentRate));
-//    REQUIRE(!std::isnan(model.previousAdjustmentRate));
-//    REQUIRE(strcmp(model.currentAdjustmentDate, "") != 0);
-//    REQUIRE(model.withdrawalsToExpiry != INVALID_INT32);
-//    REQUIRE(!std::isnan(model.hourlyVolumeVariation));
-//    REQUIRE(!std::isnan(model.cumulativeVolumeVariation));
-//    REQUIRE(model.sectorCode != INVALID_INT32);
-//    REQUIRE(model.subsectorCode != INVALID_INT32);
-//    REQUIRE(model.segmentCode != INVALID_INT32);
-//    REQUIRE(strcmp(model.adjustmentType, "") != 0);
-//    REQUIRE(!std::isnan(model.referencePrice));
-//    REQUIRE(strcmp(model.referenceDate, "") != 0);
-//    REQUIRE(strcmp(model.lastModTimeMillis, "") != 0);
-//    REQUIRE(strcmp(model.lastTradeTimeMillis, "") != 0);
-//    REQUIRE(strcmp(model.bestBidTimeMillis, "") != 0);
-//    REQUIRE(strcmp(model.bestAskTimeMillis, "") != 0);
-//    REQUIRE(!std::isnan(model.adjustedPriceVariation));
-//    REQUIRE(!std::isnan(model.diffAdjustedPrice));
-//    REQUIRE(!std::isnan(model.tunnelUpperAuctionLimit));
-//    REQUIRE(!std::isnan(model.tunnelLowerAuctionLimit));
-//    REQUIRE(!std::isnan(model.tunnelUpperRejectionLimit));
-//    REQUIRE(!std::isnan(model.tunnelLowerRejectionLimit));
-//    REQUIRE(!std::isnan(model.tunnelUpperStaticLimit));
-//    REQUIRE(!std::isnan(model.tunnelLowerStaticLimit));
-//
-//    /**
-//     *  Fields exclusive for treasure.
-//     *  Uncomment if you are testing it */
-////        REQUIRE(std::isnan(model.unitPrice));
-////        REQUIRE(std::isnan(model.rateValue));
-////        REQUIRE(std::isnan(model.minApplicationValue));
-////        REQUIRE(model.treasuryMarket == INVALID_INT32);
-////        REQUIRE(strcmp(model.titleCode, "") == 0);
-////        REQUIRE(model.typeCode == INVALID_INT32);
-////        REQUIRE(strcmp(model.typeName, "") == 0);
-////        REQUIRE(strcmp(model.selicCode, "") == 0);
-////        REQUIRE(strcmp(model.issueDate, "") == 0);
-////        REQUIRE(model.transactionId == INVALID_INT32);
-////        REQUIRE(std::isnan(model.baseValue));
-////        REQUIRE(std::isnan(model.buyRate));
-////        REQUIRE(std::isnan(model.sellRate));
-////        REQUIRE(model.indexerCode == INVALID_INT32);
-////        REQUIRE(strcmp(model.indexerName, "") == 0);
-////        REQUIRE(strcmp(model.titleName, "") == 0);
-//
-//  };
-//
-//  SECTION("SQT snapshot")
-//  {
-//    std::promise<bool> sendSQTPromise;
-//    std::future<bool> sendSQTFuture = sendSQTPromise.get_future();
-//    bool isSnapshot = true;
-//    bool promiseSet = false;
-//
-//    manager.subscribeQuote(SYMBOL_TO_TEST,
-//      [&](bool success, const cedro::md::models::SQTModel& model)
-//      {
-//        if (promiseSet)
-//          return;
-//
-//        REQUIRE(success);
-//        checkSQTModel(model);
-//
-//        promiseSet = true;
-//        sendSQTPromise.set_value(success);
-//      }, isSnapshot);
-//
-//    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 5);
-//
-//    SECTION("SQT unsubscribe")
-//    {
-//      std::promise<bool> sendUnsubPromise;
-//      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeQuote(SYMBOL_TO_TEST,
-//      [&](bool success)
-//      {
-//       REQUIRE(success);
-//       sendUnsubPromise.set_value(success);
-//      });
-//
-//      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
-//    }
-//  }
-//
-//  SECTION("SQT stream")
-//  {
-//    std::promise<bool> sendSQTPromise;
-//    std::future<bool> sendSQTFuture = sendSQTPromise.get_future();
-//    bool isSnapshot = false;
-//    bool promiseSet = false;
-//
-//    int countMessages = 0;
-//    manager.subscribeQuote(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::SQTModel& model)
-//    {
-//      if (promiseSet)
-//        return;
-//
-//      REQUIRE(success);
-//      checkSQTModel(model);
-//
-//      if(countMessages < 10)
-//      {
-//        countMessages++;
-//        return;
-//      }
-//
-//      promiseSet = true;
-//      sendSQTPromise.set_value(success);
-//
-//    }, isSnapshot);
-//
-//    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 5);
-//
-//    SECTION("SQT stream unsubscribe")
-//    {
-//      std::promise<bool> sendUnsubPromise;
-//      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeQuote(SYMBOL_TO_TEST,
-//      [&](bool success)
-//      {
-//       REQUIRE(success);
-//       sendUnsubPromise.set_value(success);
-//      });
-//
-//      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
-//    }
-//  }
-//
-//  SECTION("BQT stream")
-//  {
-//    std::promise<bool> sendSQTPromise;
-//    std::future<bool> sendSQTFuture = sendSQTPromise.get_future();
-//    bool promiseSet = false;
-//
-//    int countMessages = 0;
-//    manager.subscribeBookQuote(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::BQTModel& model)
-//    {
-//      if (promiseSet)
-//        return;
-//
-//      REQUIRE(success);
-//      REQUIRE(strcmp(model.symbol, "") != 0);
-//      REQUIRE((model.msgType == 'A' || model.msgType == 'U' || model.msgType == 'D' || model.msgType == 'E'));
-//
-//      // Verificações específicas para cada tipo de mensagem
-//      switch (model.msgType)
-//      {
-//        case 'A': // Add order
-//          REQUIRE(model.position != INVALID_INT32);
-//          REQUIRE(model.direction != '\0');
-//          REQUIRE(!std::isnan(model.price));
-//          REQUIRE(model.quantity != INVALID_INT32);
-//          REQUIRE(model.broker != INVALID_INT32);
-//          REQUIRE(strcmp(model.datetime, "") != 0);
-//          REQUIRE(strcmp(model.orderID, "") != 0);
-//          REQUIRE(model.offerType != '\0');
-//          break;
-//
-//        case 'U': // Update order
-//          REQUIRE(model.position != INVALID_INT32);
-//          REQUIRE(model.oldPosition != INVALID_INT32);
-//          REQUIRE(model.direction != '\0');
-//          REQUIRE(!std::isnan(model.price));
-//          REQUIRE(model.quantity != INVALID_INT32);
-//          REQUIRE(model.broker != INVALID_INT32);
-//          REQUIRE(strcmp(model.datetime, "") != 0);
-//          REQUIRE(strcmp(model.orderID, "") != 0);
-//          REQUIRE(model.offerType != '\0');
-//          break;
-//
-//        case 'D': // Delete order
-//          REQUIRE(model.cancelType != INVALID_INT32);
-//          if (model.cancelType != 3) // If not a mass delete, validate position and direction
-//          {
-//            REQUIRE(model.position != INVALID_INT32);
-//            REQUIRE(model.direction != '\0');
-//          }
-//          break;
-//        case 'E': // End of initial data
-//          break;
-//        default:
-//          FAIL("Unknown message type received");
-//          break;
-//      }
-//
-//      // set to a big number to get all book and test end of messages type properly
-//      if (countMessages < 100)
-//      {
-//        countMessages++;
-//        return;
-//      }
-//
-//      promiseSet = true;
-//      sendSQTPromise.set_value(success);
-//    });
-//
-//    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 60);
-//
-//    SECTION("BQT stream unsubscribe")
-//    {
-//      std::promise<bool> sendUnsubPromise;
-//      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeBookQuote(SYMBOL_TO_TEST,
-//      [&](bool success)
-//      {
-//       REQUIRE(success);
-//       sendUnsubPromise.set_value(success);
-//      });
-//
-//      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
-//    }
-//  }
-//
+    manager->disconnect([sendPromise, promiseSet](bool success)
+    {
+      if (*promiseSet)
+        return;
+
+      sendPromise->set_value(true);
+      *promiseSet = true;
+    });
+  };
+
+
+  auto checkSQTModel = [](const cedro::md::models::SQTModel& model)
+  {
+    REQUIRE(strcmp(model.symbol, "") != 0);
+
+    // Verificações de todas as variáveis da estrutura SQTModel
+
+    // Header
+    REQUIRE(strcmp(model.symbol, "") != 0);
+    REQUIRE(strcmp(model.time, "") != 0);
+
+    // Campos principais
+//        REQUIRE(strcmp(model.lastModTime, "") != 0);             //not coming
+    REQUIRE(strcmp(model.lastModDate, "") != 0);
+    REQUIRE(!std::isnan(model.lastTradePrice));
+    REQUIRE(!std::isnan(model.bestBidPrice));
+    REQUIRE(!std::isnan(model.bestAskPrice));
+    REQUIRE(strcmp(model.lastTradeTime, "") != 0);
+    REQUIRE(model.currentTradeSize != INVALID_INT32);
+    REQUIRE(model.lastTradeSize != INVALID_INT32);
+    REQUIRE(model.totalTrades != INVALID_INT32);
+    REQUIRE(model.totalVolume != INVALID_INT32);
+    REQUIRE(!std::isnan(model.totalFinancialVolume));
+    REQUIRE(!std::isnan(model.highestPriceOfDay));
+    REQUIRE(!std::isnan(model.lowestPriceOfDay));
+    REQUIRE(!std::isnan(model.previousDayClosePrice));
+    REQUIRE(!std::isnan(model.openingPrice));
+    REQUIRE(strcmp(model.bestBidTime, "") != 0);
+    REQUIRE(strcmp(model.bestAskTime, "") != 0);
+    REQUIRE(!std::isnan(model.bestBidVolume));
+    REQUIRE(!std::isnan(model.bestAskVolume));
+    REQUIRE(model.bestBidSize != INVALID_INT32);
+    REQUIRE(model.bestAskSize != INVALID_INT32);
+    REQUIRE(!std::isnan(model.variation));
+    REQUIRE(!std::isnan(model.lastWeekClosePrice));
+    REQUIRE(!std::isnan(model.lastMonthClosePrice));
+    REQUIRE(!std::isnan(model.lastYearClosePrice));
+    REQUIRE(!std::isnan(model.previousDayOpeningPrice));
+    REQUIRE(!std::isnan(model.previousDayHighestPrice));
+    REQUIRE(!std::isnan(model.previousDayLowestPrice));
+    REQUIRE(!std::isnan(model.averagePrice));
+    REQUIRE(!std::isnan(model.vhDaily));
+    REQUIRE(model.marketCode != INVALID_INT32);
+    REQUIRE(model.assetType != INVALID_INT32);
+    REQUIRE(model.standardLot != INVALID_INT32);
+    REQUIRE(strcmp(model.assetDescription, "") != 0);
+    REQUIRE(strcmp(model.classificationName, "") != 0);
+    REQUIRE(model.quoteForm != INVALID_INT32);
+    REQUIRE(strcmp(model.intradayDate, "") != 0);
+    REQUIRE(strcmp(model.lastTradeDate, "") != 0);
+    REQUIRE(strcmp(model.shortAssetDescription, "") != 0);
+    REQUIRE(strcmp(model.canceledTradeId, "") != 0);
+    REQUIRE(strcmp(model.lastTradeDateSimple, "") != 0);
+    REQUIRE(model.openingUnfulfilledSide != 'x');
+    REQUIRE(model.openingUnfulfilledSize != INVALID_INT32);
+    REQUIRE(strcmp(model.scheduledOpeningTime, "") != 0);
+    REQUIRE(strcmp(model.rescheduledOpeningTime, "") != 0);
+    REQUIRE(model.bestBidBroker != INVALID_INT32);
+    REQUIRE(model.bestAskBroker != INVALID_INT32);
+    REQUIRE(model.lastBuyBroker != INVALID_INT32);
+    REQUIRE(model.lastSellBroker != INVALID_INT32);
+    REQUIRE(strcmp(model.optionExpirationDate, "") != 0);
+    REQUIRE(model.expired != INVALID_INT8);
+    REQUIRE(strcmp(model.totalPapers, "") != 0);
+    REQUIRE(model.instrumentStatus != INVALID_INT32);
+    REQUIRE(model.optionType != '\0');
+    REQUIRE(model.optionDirection != '\0');
+    REQUIRE(strcmp(model.parentSymbol, "") != 0);
+    REQUIRE(!std::isnan(model.theoreticalOpeningPrice));
+    REQUIRE(model.theoreticalSize != INVALID_INT32);
+    REQUIRE(model.assetStatus != INVALID_INT32);
+    REQUIRE(!std::isnan(model.strikePrice));
+    REQUIRE(!std::isnan(model.diffPrice));
+    REQUIRE(strcmp(model.previousDay, "") != 0);
+    REQUIRE(strcmp(model.assetGroupPhase, "") != 0);
+    //      REQUIRE(!std::isnan(model.previousDayAveragePrice));    //not coming
+    //      REQUIRE(!std::isnan(model.marginRange));                //not coming
+    REQUIRE(!std::isnan(model.averageVolume20Days));
+    REQUIRE(!std::isnan(model.marketCapitalization));
+    REQUIRE(strcmp(model.marketType, "") != 0);
+    REQUIRE(!std::isnan(model.weekCloseVariation));
+    REQUIRE(!std::isnan(model.monthCloseVariation));
+    REQUIRE(!std::isnan(model.yearCloseVariation));
+    REQUIRE(model.openContracts != INVALID_INT32);
+    REQUIRE(model.businessDaysToExpiry != INVALID_INT32);
+    REQUIRE(model.daysToExpiry != INVALID_INT32);
+    REQUIRE(!std::isnan(model.adjustmentPrice));
+    REQUIRE(!std::isnan(model.previousDayAdjustmentPrice));
+    REQUIRE(strcmp(model.securityId, "") != 0);
+    REQUIRE(strcmp(model.tickDirection, "") != 0);
+    REQUIRE(!std::isnan(model.tunnelUpperLimit));
+    REQUIRE(!std::isnan(model.tunnelLowerLimit));
+    REQUIRE(strcmp(model.tradingPhase, "") != 0);
+    REQUIRE(model.tickSize != INVALID_INT32);
+    REQUIRE(model.minTradeVolume != INVALID_INT32);
+    REQUIRE(!std::isnan(model.minPriceIncrement));
+    REQUIRE(model.minOfferSize != INVALID_INT32);
+    REQUIRE(model.maxOfferSize != INVALID_INT32);
+    REQUIRE(model.uniqueInstrumentId != INVALID_INT32);
+    REQUIRE(strcmp(model.currency, "") != 0);
+    REQUIRE(strcmp(model.securityType, "") != 0);
+    REQUIRE(strcmp(model.securitySubType, "") != 0);
+    REQUIRE(model.associatedProduct != INVALID_INT32);
+    REQUIRE(strcmp(model.expiryMonthYear, "") != 0);
+    REQUIRE(!std::isnan(model.optionStrikePrice));
+    REQUIRE(strcmp(model.optionCurrency, "") != 0);
+    REQUIRE(!std::isnan(model.contractMultiplier));
+    REQUIRE(model.priceType != INVALID_INT32);
+    REQUIRE(strcmp(model.endOfTradeTime, "") != 0);
+    REQUIRE(strcmp(model.assetGroup, "") != 0);
+    REQUIRE(!std::isnan(model.currentAdjustmentRate));
+    REQUIRE(!std::isnan(model.previousAdjustmentRate));
+    REQUIRE(strcmp(model.currentAdjustmentDate, "") != 0);
+    REQUIRE(model.withdrawalsToExpiry != INVALID_INT32);
+    REQUIRE(!std::isnan(model.hourlyVolumeVariation));
+    REQUIRE(!std::isnan(model.cumulativeVolumeVariation));
+    REQUIRE(model.sectorCode != INVALID_INT32);
+    REQUIRE(model.subsectorCode != INVALID_INT32);
+    REQUIRE(model.segmentCode != INVALID_INT32);
+    REQUIRE(strcmp(model.adjustmentType, "") != 0);
+    REQUIRE(!std::isnan(model.referencePrice));
+    REQUIRE(strcmp(model.referenceDate, "") != 0);
+    REQUIRE(strcmp(model.lastModTimeMillis, "") != 0);
+    REQUIRE(strcmp(model.lastTradeTimeMillis, "") != 0);
+    REQUIRE(strcmp(model.bestBidTimeMillis, "") != 0);
+    REQUIRE(strcmp(model.bestAskTimeMillis, "") != 0);
+    REQUIRE(!std::isnan(model.adjustedPriceVariation));
+    REQUIRE(!std::isnan(model.diffAdjustedPrice));
+    REQUIRE(!std::isnan(model.tunnelUpperAuctionLimit));
+    REQUIRE(!std::isnan(model.tunnelLowerAuctionLimit));
+    REQUIRE(!std::isnan(model.tunnelUpperRejectionLimit));
+    REQUIRE(!std::isnan(model.tunnelLowerRejectionLimit));
+    REQUIRE(!std::isnan(model.tunnelUpperStaticLimit));
+    REQUIRE(!std::isnan(model.tunnelLowerStaticLimit));
+
+    /**
+     *  Fields exclusive for treasure.
+     *  Uncomment if you are testing it */
+//        REQUIRE(std::isnan(model.unitPrice));
+//        REQUIRE(std::isnan(model.rateValue));
+//        REQUIRE(std::isnan(model.minApplicationValue));
+//        REQUIRE(model.treasuryMarket == INVALID_INT32);
+//        REQUIRE(strcmp(model.titleCode, "") == 0);
+//        REQUIRE(model.typeCode == INVALID_INT32);
+//        REQUIRE(strcmp(model.typeName, "") == 0);
+//        REQUIRE(strcmp(model.selicCode, "") == 0);
+//        REQUIRE(strcmp(model.issueDate, "") == 0);
+//        REQUIRE(model.transactionId == INVALID_INT32);
+//        REQUIRE(std::isnan(model.baseValue));
+//        REQUIRE(std::isnan(model.buyRate));
+//        REQUIRE(std::isnan(model.sellRate));
+//        REQUIRE(model.indexerCode == INVALID_INT32);
+//        REQUIRE(strcmp(model.indexerName, "") == 0);
+//        REQUIRE(strcmp(model.titleName, "") == 0);
+
+  };
+
+  SECTION("SQT snapshot")
+  {
+    std::promise<bool> sendSQTPromise;
+    std::future<bool> sendSQTFuture = sendSQTPromise.get_future();
+    bool isSnapshot = true;
+    bool promiseSet = false;
+
+    manager->subscribeQuote(SYMBOL_TO_TEST,
+      [&](bool success, const cedro::md::models::SQTModel& model)
+      {
+        if (promiseSet)
+          return;
+
+        REQUIRE(success);
+        checkSQTModel(model);
+
+        promiseSet = true;
+        sendSQTPromise.set_value(success);
+      }, isSnapshot);
+
+    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 5);
+
+    SECTION("SQT unsubscribe")
+    {
+      std::promise<bool> sendUnsubPromise;
+      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
+      manager->unsubscribeQuote(SYMBOL_TO_TEST,
+      [&](bool success)
+      {
+       REQUIRE(success);
+       sendUnsubPromise.set_value(success);
+      });
+
+      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
+    }
+
+    disconnectManager();
+  }
+
+  SECTION("SQT stream")
+  {
+    std::promise<bool> sendSQTPromise;
+    std::future<bool> sendSQTFuture = sendSQTPromise.get_future();
+    bool isSnapshot = false;
+    auto promiseSet = std::make_shared<std::atomic<bool>>(false);
+
+    int countMessages = 0;
+    manager->subscribeQuote(SYMBOL_TO_TEST, [&, promiseSet](bool success, const cedro::md::models::SQTModel& model)
+    {
+      if (*promiseSet)
+        return;
+
+      REQUIRE(success);
+      checkSQTModel(model);
+
+      if(countMessages < 10)
+      {
+        countMessages++;
+        return;
+      }
+
+      *promiseSet = true;
+      sendSQTPromise.set_value(success);
+
+    }, isSnapshot);
+
+    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 5);
+
+    SECTION("SQT stream unsubscribe")
+    {
+      std::promise<bool> sendUnsubPromise;
+      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
+      manager->unsubscribeQuote(SYMBOL_TO_TEST,
+      [&](bool success)
+      {
+       REQUIRE(success);
+       sendUnsubPromise.set_value(success);
+      });
+
+      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
+    }
+    disconnectManager();
+  }
+
+  SECTION("BQT stream")
+  {
+    auto sendSQTPromise = std::make_shared<std::promise<bool>>() ;
+    std::future<bool> sendSQTFuture = sendSQTPromise->get_future();
+    auto promiseSet = std::make_shared<std::atomic<bool>>(false);
+
+    int countMessages = 0;
+    manager->subscribeBookQuote(SYMBOL_TO_TEST, [&, sendSQTPromise, promiseSet](bool success, const cedro::md::models::BQTModel& model)
+    {
+      if (*promiseSet)
+        return;
+
+      REQUIRE(success);
+      REQUIRE(strcmp(model.symbol, "") != 0);
+      REQUIRE((model.msgType == 'A' || model.msgType == 'U' || model.msgType == 'D' || model.msgType == 'E'));
+
+      // Verificações específicas para cada tipo de mensagem
+      switch (model.msgType)
+      {
+        case 'A': // Add order
+          REQUIRE(model.position != INVALID_INT32);
+          REQUIRE(model.direction != '\0');
+          REQUIRE(!std::isnan(model.price));
+          REQUIRE(model.quantity != INVALID_INT32);
+          REQUIRE(model.broker != INVALID_INT32);
+          REQUIRE(strcmp(model.datetime, "") != 0);
+          REQUIRE(strcmp(model.orderID, "") != 0);
+          REQUIRE(model.offerType != '\0');
+          break;
+
+        case 'U': // Update order
+          REQUIRE(model.position != INVALID_INT32);
+          REQUIRE(model.oldPosition != INVALID_INT32);
+          REQUIRE(model.direction != '\0');
+          REQUIRE(!std::isnan(model.price));
+          REQUIRE(model.quantity != INVALID_INT32);
+          REQUIRE(model.broker != INVALID_INT32);
+          REQUIRE(strcmp(model.datetime, "") != 0);
+          REQUIRE(strcmp(model.orderID, "") != 0);
+          REQUIRE(model.offerType != '\0');
+          break;
+
+        case 'D': // Delete order
+          REQUIRE(model.cancelType != INVALID_INT32);
+          if (model.cancelType != 3) // If not a mass delete, validate position and direction
+          {
+            REQUIRE(model.position != INVALID_INT32);
+            REQUIRE(model.direction != '\0');
+          }
+          break;
+        case 'E': // End of initial data
+          break;
+        default:
+          FAIL("Unknown message type received");
+          break;
+      }
+
+      // set to a big number to get all book and test end of messages type properly
+      if (countMessages < 100)
+      {
+        countMessages++;
+        return;
+      }
+
+      *promiseSet = true;
+
+      sendSQTPromise->set_value(success);
+    });
+
+    TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 60);
+
+    SECTION("BQT stream unsubscribe")
+    {
+      std::promise<bool> sendUnsubPromise;
+      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
+      bool promiseSetUnsub= false;
+      manager->unsubscribeBookQuote(SYMBOL_TO_TEST,
+      [&](bool success)
+      {
+        if(promiseSetUnsub)
+          return;
+
+        promiseSetUnsub = true;
+       REQUIRE(success);
+       sendUnsubPromise.set_value(success);
+      });
+
+      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
+    }
+    disconnectManager();
+  }
+
 //  SECTION("GQT stream")
 //  {
 //    std::promise<bool> sendGQTPromise;
@@ -354,7 +379,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    bool promiseSet = false;
 //
 //    int countMessages = 0;
-//    manager.subscribeQuoteTrades(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::GQTModel& model)
+//    manager->subscribeQuoteTrades(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::GQTModel& model)
 //    {
 //      if (promiseSet)
 //        return;
@@ -414,7 +439,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    {
 //      std::promise<bool> sendUnsubPromise;
 //      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeQuoteTrades(SYMBOL_TO_TEST,
+//      manager->unsubscribeQuoteTrades(SYMBOL_TO_TEST,
 //      [&](bool success)
 //      {
 //        REQUIRE(success);
@@ -423,6 +448,8 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //
 //      TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
 //    }
+//
+//    disconnectManager();
 //  }
 //
 ///**
@@ -439,7 +466,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //
 //    int countMessages = 0;
 //    int numberOfQuotes = 200;
-//    manager.snapshotQuoteTrades(SYMBOL_TO_TEST, numberOfQuotes,
+//    manager->snapshotQuoteTrades(SYMBOL_TO_TEST, numberOfQuotes,
 //    [&](bool success, const cedro::md::models::GQTModel& model, bool isEndOfMessages)
 //    {
 //      if (promiseSet)
@@ -506,7 +533,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    bool promiseSet = false;
 //    bool isSnapshot = true;
 //
-//    manager.subscribeAggBook(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::SABModel& model)
+//    manager->subscribeAggBook(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::SABModel& model)
 //    {
 //      if (promiseSet)
 //        return;
@@ -553,7 +580,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    {
 //      std::promise<bool> sendUnsubPromise;
 //      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeAggBook(SYMBOL_TO_TEST,
+//      manager->unsubscribeAggBook(SYMBOL_TO_TEST,
 //      [&](bool success)
 //      {
 //        REQUIRE(success);
@@ -572,7 +599,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    bool isSnapshot = false;
 //
 //    int countMessages = 0;
-//    manager.subscribeAggBook(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::SABModel& model)
+//    manager->subscribeAggBook(SYMBOL_TO_TEST, [&](bool success, const cedro::md::models::SABModel& model)
 //    {
 //      if (promiseSet)
 //        return;
@@ -623,7 +650,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    {
 //      std::promise<bool> sendUnsubPromise;
 //      std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-//      manager.unsubscribeAggBook(SYMBOL_TO_TEST,
+//      manager->unsubscribeAggBook(SYMBOL_TO_TEST,
 //      [&](bool success)
 //      {
 //        REQUIRE(success);
@@ -640,7 +667,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    std::future<bool> sendVAPFuture = sendVAPPromise.get_future();
 //    bool promiseSet = false;
 //
-//    manager.snapshotVolumeAtPrice(SYMBOL_TO_TEST,
+//    manager->snapshotVolumeAtPrice(SYMBOL_TO_TEST,
 //    [&](bool success, const cedro::md::models::VAPModel& model, bool isEndOfMessages)
 //    {
 //      if (promiseSet)
@@ -686,7 +713,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    std::future<bool> sendVAPFuture = sendVAPPromise.get_future();
 //    bool promiseSet = false;
 //    int32_t lastMinutes = 10;
-//    manager.snapshotVolumeAtPriceLastMinutes(SYMBOL_TO_TEST,
+//    manager->snapshotVolumeAtPriceLastMinutes(SYMBOL_TO_TEST,
 //    [&](bool success, const cedro::md::models::VAPModel& model, bool isEndOfMessages)
 //    {
 //      if (promiseSet)
@@ -733,7 +760,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
 //    std::string startDate = "20240801";
 //    std::string endDate = "20240807";
 //    bool accumulated = true;
-//    manager.snapshotVolumeAtPriceHistory(SYMBOL_TO_TEST,
+//    manager->snapshotVolumeAtPriceHistory(SYMBOL_TO_TEST,
 //    [&](bool success, const cedro::md::models::VAPModel& model, bool isEndOfMessages)
 //    {
 //     if (promiseSet)
@@ -778,7 +805,7 @@ TEST_CASE("Processed Subscribe Quote - SQT")
     std::future<bool> sendGPNFuture = sendGPNPromise.get_future();
     bool promiseSet = false;
     bool sortedByName = true;
-    manager.getPlayerNames("bmf", sortedByName,
+    manager->getPlayerNames("bmf", sortedByName,
     [&](bool success, const cedro::md::models::GPNModel& model, bool isEndOfMessages)
     {
       if (promiseSet)
@@ -798,11 +825,12 @@ TEST_CASE("Processed Subscribe Quote - SQT")
       {
         REQUIRE(model.msgType == 'E');
         logI << ("GPN: End of messages received");
-        sendGPNPromise.set_value(success);
         promiseSet = true;
+        sendGPNPromise.set_value(success);
       }
     });
 
     TestHelper::waitForSuccess(sendGPNFuture, streamPtr, 10);
+    disconnectManager();
   }
 }

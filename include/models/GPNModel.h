@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include "CMDTypes.h"
-#include "StringHelper.h"
+#include "ParseHelper.h"
 
 namespace cedro::md::models
 {
@@ -58,19 +58,17 @@ namespace cedro::md::models
 
       const char* currentPos = firstColon + 1;
 
-      char delimiter = ':';
-      const char* errMsg = "VAP: Unexpected end of data.";
+      ParseHelper::toInt(brokerCode, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toInt(brokerCode, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      if(!ParseHelper::copyUntilDelimiter(brokerName, currentPos, MAX_STRING_SIZE)) return;
 
-      std::strncpy(brokerName, currentPos, MAX_STRING_SIZE);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toInt(brokerCodeAtBank, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toInt(brokerCodeAtBank, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toInt(marketCode, currentPos);
+      ParseHelper::toInt(marketCode, currentPos);
     }
   };
 }

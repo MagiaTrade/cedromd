@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include "CMDTypes.h"
-#include "StringHelper.h"
+#include "ParseHelper.h"
 
 namespace cedro::md::models
 {
@@ -66,54 +66,51 @@ namespace cedro::md::models
 
       const char* currentPos = firstColon + 1;
 
-      char delimiter = ':';
-      const char* errMsg = "VAP: Unexpected end of data.";
+      ParseHelper::toDouble(tradedPrice, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(tradedPrice, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(buyerTrades, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(buyerTrades, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(buyerVolume, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(buyerVolume, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(sellerTrades, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(sellerTrades, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(sellerVolume, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(sellerVolume, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(directTrades, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(directTrades, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(directVolume, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(directVolume, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(undefinedTrades, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(undefinedTrades, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
-
-      toDouble(undefinedVolume, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(undefinedVolume, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
       if(requestedType == VAPRequestInfo::NORMAL ||
           requestedType == VAPRequestInfo::MINUTE)
       {
         msgType = requestedType == VAPRequestInfo::NORMAL ?  'N' : 'M';
-        toInt(period, currentPos);
-        if (!moveOn(currentPos, delimiter, errMsg)) return;
+        ParseHelper::toInt(period, currentPos);
+        if (!ParseHelper::moveOn(currentPos)) return;
       }
       else if(requestedType == VAPRequestInfo::HISTORY)
       {
         msgType = 'H';
         std::strncpy(dateRange, currentPos, MAX_STRING_SIZE);
-        if (!moveOn(currentPos, delimiter, errMsg)) return;
+        if (!ParseHelper::moveOn(currentPos)) return;
       }
 
-      toDouble(rlpTrades, currentPos);
-      if (!moveOn(currentPos, delimiter, errMsg)) return;
+      ParseHelper::toDouble(rlpTrades, currentPos);
+      if (!ParseHelper::moveOn(currentPos)) return;
 
-      toDouble(rlpVolume, currentPos);
+      ParseHelper::toDouble(rlpVolume, currentPos);
     }
   };
 }

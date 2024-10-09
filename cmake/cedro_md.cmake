@@ -3,7 +3,7 @@ set(CMD_HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/include/managers/CMDBaseManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/managers/CMDProcessedManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/common/CMDTypes.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/helpers/StringHelper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/helpers/ParseHelper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/models/SQTModel.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/models/BQTModel.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/models/GQTModel.h

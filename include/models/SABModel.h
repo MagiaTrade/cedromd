@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 #include "CMDTypes.h"
+#include "ParseHelper.h"
 
 namespace cedro::md::models
 {
@@ -55,86 +56,43 @@ namespace cedro::md::models
       // Move to after msgType column ':'
       const char* currentPos = firstColon + 3;
 
-      auto toInt = [](int32_t &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        long value = std::strtol(inStart, &outEnd, 10);
-
-        if (value == INVALID_INT32 || outEnd == inStart)
-        {
-          out = INVALID_INT32;
-          return false;
-        }
-
-        out = static_cast<int32_t>(value);
-        return true;
-      };
-
-      auto toDouble = [](double &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        double value = std::strtod(inStart, &outEnd);
-
-        if (std::isnan(value) || outEnd == inStart)
-        {
-          out = dNaN;
-          return false;
-        }
-
-        out = value;
-        return true;
-      };
-
-      auto moveOn = [](const char*& currentPos) -> bool
-      {
-        currentPos = std::strchr(currentPos, ':');
-        if (currentPos == nullptr)
-        {
-          logE << ("SAB: Unexpected end of data.");
-          return false;
-        }
-
-        currentPos++; // Skips the ':'
-        return true;
-      };
-
       switch (msgType)
       {
         case 'A': // Add order
         case 'U': // Update order
         {
-          if (!toInt(position, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(position, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
           direction = *currentPos++;
 
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toDouble(price, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toDouble(price, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(quantity, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(quantity, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(numOfOffers, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(numOfOffers, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          std::strncpy(dateTime, currentPos, MAX_STRING_SIZE);
+          ParseHelper::copyUntilDelimiter(dateTime, currentPos, MAX_STRING_SIZE);
           break;
         }
         case 'D': // Cancel order
         {
-          if (!toInt(cancelType, currentPos)) break;
+          if (!ParseHelper::toInt(cancelType, currentPos)) break;
 
           if (cancelType == 3) break;
 
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
           direction = *currentPos++;
 
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(position, currentPos)) break;
+          if (!ParseHelper::toInt(position, currentPos)) break;
 
           break;
         }

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include "CMDTypes.h"
+#include "ParseHelper.h"
 
 namespace cedro::md::models
 {
@@ -71,81 +72,43 @@ namespace cedro::md::models
       if(msgType != 'E')
         operation = msgType;
 
-      auto toInt = [](int32_t &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        long value = std::strtol(inStart, &outEnd, 10);
-        if (value == INVALID_INT32 || outEnd == inStart)
-        {
-          out = INVALID_INT32;
-          return false;
-        }
-        out = static_cast<int32_t>(value);
-        return true;
-      };
-
-      auto toDouble = [](double &out, const char* inStart) -> bool
-      {
-        char* outEnd;
-        double value = std::strtod(inStart, &outEnd);
-        if (std::isnan(value) || outEnd == inStart)
-        {
-          out = dNaN;
-          return false;
-        }
-        out = value;
-        return true;
-      };
-
-      auto moveOn = [](const char*& currentPos) -> bool
-      {
-        currentPos = std::strchr(currentPos, ':');
-        if (currentPos == nullptr)
-        {
-          logE << ("GQT: Unexpected end of data.");
-          return false;
-        }
-        currentPos++; // Skips the ':'
-        return true;
-      };
-
       switch (msgType)
       {
         case 'A': // Add trade
         {
-          std::strncpy(time, currentPos, MAX_STRING_SIZE);
-          if (!moveOn(currentPos)) break;
+          if(!ParseHelper::copyUntilDelimiter(time, currentPos, MAX_STRING_SIZE)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toDouble(price, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toDouble(price, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(buyerBroker, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(buyerBroker, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(sellerBroker, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(sellerBroker, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          if (!toInt(quantity, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(quantity, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
-          std::strncpy(tradeID, currentPos, MAX_STRING_SIZE);
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::copyUntilDelimiter(tradeID, currentPos, MAX_STRING_SIZE)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
           if(_isSnapshot)
           {
-            std::strncpy(requestID, currentPos, MAX_STRING_SIZE);
-            if (!moveOn(currentPos)) break;
+            if (!ParseHelper::copyUntilDelimiter(requestID, currentPos, MAX_STRING_SIZE)) break;
+            if (!ParseHelper::moveOn(currentPos)) break;
           }
 
-          if (!toInt(direct, currentPos)) break;
-          if (!moveOn(currentPos)) break;
+          if (!ParseHelper::toInt(direct, currentPos)) break;
+          if (!ParseHelper::moveOn(currentPos)) break;
 
           aggressor = *currentPos;
           break;
         }
         case 'D': // Remove trade
         {
-          std::strncpy(tradeID, currentPos, MAX_STRING_SIZE);
+          ParseHelper::copyUntilDelimiter(tradeID, currentPos, MAX_STRING_SIZE);
           break;
         }
         case 'R': // Remove all trades
@@ -155,7 +118,7 @@ namespace cedro::md::models
         case 'E': // End of messages with requested id (needs to be snapshot)
         {
           if(_isSnapshot)
-            std::strncpy(requestID, currentPos, MAX_STRING_SIZE);
+            ParseHelper::copyUntilDelimiter(requestID, currentPos, MAX_STRING_SIZE);
           break;
         }
         default:

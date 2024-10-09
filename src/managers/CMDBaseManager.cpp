@@ -3,10 +3,9 @@
 //
 
 #include "managers/CMDBaseManager.h"
-#include "StringHelper.h"
+#include "ParseHelper.h"
 #include <memory>
 #include "CMDTypes.h"
-#include "StringHelper.h"
 
 namespace cedro::md
 {
@@ -829,7 +828,7 @@ namespace cedro::md
                                             const std::shared_ptr<bb::network::rs::Stream>& stream,
                                             const ConnectionCallback &cb)
   {
-    std::string trimmedData = trim(data);
+    std::string trimmedData = ParseHelper::trim(data);
 
     if (trimmedData.empty())
     {
@@ -862,7 +861,7 @@ namespace cedro::md
     }
     else
     {
-      logI << ("Useless message: " + data);
+      logI << "Useless message: " << data;
     }
   }
 
