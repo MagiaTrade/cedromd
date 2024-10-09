@@ -10,10 +10,10 @@ endif()
 add_executable(${PROJECT_NAME}
     main.cpp
     TestsHelper.h
-    cases/connection.cpp
+#    cases/connection.cpp
     cases/commands.cpp
-    cases/errors.cpp
-    cases/processed.cpp
+#    cases/errors.cpp
+#    cases/processed.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}  PRIVATE

@@ -8,25 +8,51 @@
 
 TEST_CASE("COMMANDS", "[commands]")
 {
-  cedro::md::CMDBaseManager manager(CEDRO_USERNAME, CEDRO_PASSWORD, CEDRO_SOFTKEY);
+  auto manager = std::make_shared<cedro::md::CMDBaseManager>(CEDRO_USERNAME, CEDRO_PASSWORD, CEDRO_SOFTKEY);
 
   std::promise<bool> sendPromise;
   std::future<bool> sendFuture = sendPromise.get_future();
 
   std::shared_ptr<bb::network::rs::Stream> streamPtr;
 
-  manager.connect([&](bool success, const std::shared_ptr<bb::network::rs::Stream>& stream)
+  auto _promiseSet = std::make_shared<std::atomic<bool>>();
+  _promiseSet->store(false);
+
+  manager->connect([&](bool success, const std::shared_ptr<bb::network::rs::Stream>& stream)
   {
+    auto previousValue  = _promiseSet->exchange(true);
+    if(previousValue)
+      return;
+
     streamPtr = stream;
     sendPromise.set_value(success);
   });
 
   TestHelper::waitForSuccess(sendFuture, streamPtr, 3);
 
-  manager.setErrorCallback([&](const cedro::md::Error& error, const std::string& msg)
+  manager->setErrorCallback([&](const cedro::md::Error& error, const std::string& msg)
   {
     logW << ("Error: " + error.toString() + " Msg: " + msg);
   });
+
+  auto disconnectManager = [&](){
+    std::promise<bool> sendPromise;
+    std::future<bool> sendFuture = sendPromise.get_future();
+    bool promiseSet = false;
+
+    manager->disconnect([&](bool success)
+    {
+      if(promiseSet)
+        return;
+
+      sendPromise.set_value(true);
+      promiseSet = true;
+   });
+
+    sendFuture.wait();
+
+    manager.reset();
+  };
 
   SECTION("SQT snapshot")
   {
@@ -35,7 +61,7 @@ TEST_CASE("COMMANDS", "[commands]")
     bool isSnapshot = true;
     bool promiseSet = false;
 
-    manager.subscribeQuote(SYMBOL_TO_TEST,
+    manager->subscribeQuote(SYMBOL_TO_TEST,
     [&](bool success, const char* data, size_t size)
     {
       if(promiseSet)
@@ -54,6 +80,7 @@ TEST_CASE("COMMANDS", "[commands]")
     }, isSnapshot);
 
     TestHelper::waitForSuccess(sendSQTFuture, streamPtr, 5);
+    disconnectManager();
   }
 
   SECTION("SQT stream")
@@ -64,7 +91,7 @@ TEST_CASE("COMMANDS", "[commands]")
     bool isSnapshot = false;
     bool promiseSet = false;
 
-    manager.subscribeQuote(SYMBOL_TO_TEST,
+    manager->subscribeQuote(SYMBOL_TO_TEST,
     [&](bool success, const char* data, size_t size)
     {
       countMsgs++;
@@ -93,7 +120,7 @@ TEST_CASE("COMMANDS", "[commands]")
     {
       std::promise<bool> sendUnsubPromise;
       std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-      manager.unsubscribeQuote(SYMBOL_TO_TEST,
+      manager->unsubscribeQuote(SYMBOL_TO_TEST,
      [&](bool success)
      {
        REQUIRE(success);
@@ -102,6 +129,7 @@ TEST_CASE("COMMANDS", "[commands]")
 
       TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
     }
+    disconnectManager();
   }
 
   SECTION("BQT stream")
@@ -111,7 +139,7 @@ TEST_CASE("COMMANDS", "[commands]")
     int countMsgs = 0;
     bool promiseSet = false;
 
-    manager.subscribeBookQuote(SYMBOL_TO_TEST,
+    manager->subscribeBookQuote(SYMBOL_TO_TEST,
     [&](bool success, const char* data, size_t size)
     {
       countMsgs++;
@@ -136,7 +164,7 @@ TEST_CASE("COMMANDS", "[commands]")
     {
       std::promise<bool> sendUnsubPromise;
       std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-      manager.unsubscribeBookQuote(SYMBOL_TO_TEST,
+      manager->unsubscribeBookQuote(SYMBOL_TO_TEST,
       [&](bool success)
       {
        REQUIRE(success);
@@ -145,6 +173,8 @@ TEST_CASE("COMMANDS", "[commands]")
 
       TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
     }
+
+    disconnectManager();
   }
 
   SECTION("SAB stream")
@@ -154,7 +184,7 @@ TEST_CASE("COMMANDS", "[commands]")
     int countMsgs = 0;
     bool promiseSet = false;
 
-    manager.subscribeAggBook(SYMBOL_TO_TEST,
+    manager->subscribeAggBook(SYMBOL_TO_TEST,
     [&](bool success, const char* data, size_t size)
     {
       countMsgs++;
@@ -179,7 +209,7 @@ TEST_CASE("COMMANDS", "[commands]")
     {
       std::promise<bool> sendUnsubPromise;
       std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-      manager.unsubscribeAggBook(SYMBOL_TO_TEST,
+      manager->unsubscribeAggBook(SYMBOL_TO_TEST,
      [&](bool success)
      {
        REQUIRE(success);
@@ -188,6 +218,8 @@ TEST_CASE("COMMANDS", "[commands]")
 
       TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
     }
+
+    disconnectManager();
   }
 
   SECTION("GQT stream")
@@ -196,7 +228,7 @@ TEST_CASE("COMMANDS", "[commands]")
     std::future<bool> sendGQTFuture = sendGQTPromise.get_future();
     int countMsgs = 0;
     bool promiseSet = false;
-    manager.subscribeQuoteTrades(SYMBOL_TO_TEST,
+    manager->subscribeQuoteTrades(SYMBOL_TO_TEST,
     [&](bool success, const char* data, size_t size)
     {
       countMsgs++;
@@ -222,7 +254,7 @@ TEST_CASE("COMMANDS", "[commands]")
     {
       std::promise<bool> sendUnsubPromise;
       std::future<bool> sendUnsubFuture = sendUnsubPromise.get_future();
-      manager.unsubscribeQuoteTrades(SYMBOL_TO_TEST,
+      manager->unsubscribeQuoteTrades(SYMBOL_TO_TEST,
       [&](bool success)
       {
        REQUIRE(success);
@@ -231,8 +263,10 @@ TEST_CASE("COMMANDS", "[commands]")
 
       TestHelper::waitForSuccess(sendUnsubFuture, streamPtr, 5);
     }
+    disconnectManager();
   }
-//
+
+
 //  /**
 //   * This is the most problematic section so far
 //   * the reason is that sometimes requesting quotes in sequence the callback comes
@@ -247,7 +281,7 @@ TEST_CASE("COMMANDS", "[commands]")
 //      std::future<bool> futureGQTSnap = promiseGQTSnap.get_future();
 //      size_t numberOfTrades = 10 * i;
 //      size_t countMessages = 0;
-//      manager.snapshotQuoteTrades(SYMBOL_TO_TEST, numberOfTrades,
+//      manager->snapshotQuoteTrades(SYMBOL_TO_TEST, numberOfTrades,
 //      [&](bool success, const char *data, size_t size, bool isEndOfMessage)
 //      {
 //        auto *startMsg = std::strstr(data, "V:");
@@ -263,6 +297,7 @@ TEST_CASE("COMMANDS", "[commands]")
 //
 //      REQUIRE((countMessages == numberOfTrades || countMessages == 0));
 //    }
+//    disconnectManager();
 //  }
 
   SECTION("VAP Normal snapshot")
@@ -270,7 +305,7 @@ TEST_CASE("COMMANDS", "[commands]")
     std::promise<bool> promiseVAP;
     std::future<bool> futureVAP = promiseVAP.get_future();
 
-    manager.snapshotVolumeAtPrice(SYMBOL_TO_TEST,
+    manager->snapshotVolumeAtPrice(SYMBOL_TO_TEST,
     [&](bool success, const char *data, size_t size, bool isEndOfMessage, cedro::md::VAPRequestInfo::Type requestedType)
     {
       auto *startMsg = std::strstr(data, "VAP:");
@@ -281,6 +316,7 @@ TEST_CASE("COMMANDS", "[commands]")
     });
 
     TestHelper::waitForSuccess(futureVAP, streamPtr, 5);
+    disconnectManager();
   }
 
   SECTION("VAP Minute snapshot")
@@ -288,7 +324,7 @@ TEST_CASE("COMMANDS", "[commands]")
     std::promise<bool> promiseVAP;
     std::future<bool> futureVAP = promiseVAP.get_future();
     int32_t minutes = 60;
-    manager.snapshotVolumeAtPriceLastMinutes(
+    manager->snapshotVolumeAtPriceLastMinutes(
       SYMBOL_TO_TEST,
       [&](bool success, const char *data, size_t size, bool isEndOfMessage, cedro::md::VAPRequestInfo::Type requestedType)
       {
@@ -300,6 +336,7 @@ TEST_CASE("COMMANDS", "[commands]")
       }, minutes);
 
     TestHelper::waitForSuccess(futureVAP, streamPtr, 10);
+    disconnectManager();
   }
 
   SECTION("VAP snapshot history")
@@ -310,7 +347,7 @@ TEST_CASE("COMMANDS", "[commands]")
     std::string endDate = "20240807";
     bool acc = false;
 
-    manager.snapshotVolumeAtPriceHistory(
+    manager->snapshotVolumeAtPriceHistory(
       SYMBOL_TO_TEST,
       [&](bool success, const char *data, size_t size, bool isEndOfMessage, cedro::md::VAPRequestInfo::Type requestedType)
       {
@@ -325,17 +362,18 @@ TEST_CASE("COMMANDS", "[commands]")
       acc);
 
     TestHelper::waitForSuccess(futureVAP, streamPtr, 5);
+    disconnectManager();
   }
 
   SECTION("VAP snapshot history accumulated")
   {
     std::promise<bool> promiseVAP;
     std::future<bool> futureVAP = promiseVAP.get_future();
-    std::string startDate = "20240801";
-    std::string endDate = "20240807";
+    std::string startDate = "20241001";
+    std::string endDate = "20241003";
     bool acc = true;
 
-    manager.snapshotVolumeAtPriceHistory(
+    manager->snapshotVolumeAtPriceHistory(
       SYMBOL_TO_TEST,
       [&](bool success, const char *data, size_t size, bool isEndOfMessage, cedro::md::VAPRequestInfo::Type requestedType)
       {
@@ -350,6 +388,7 @@ TEST_CASE("COMMANDS", "[commands]")
       acc);
 
     TestHelper::waitForSuccess(futureVAP, streamPtr, 5);
+    disconnectManager();
   }
 
   SECTION("GPN: get players")
@@ -360,7 +399,7 @@ TEST_CASE("COMMANDS", "[commands]")
 
     bool passou = false;
     bool fechou = false;
-    manager.getPlayerNames("bmf", sortedByName,
+    manager->getPlayerNames("bmf", sortedByName,
     [&](bool success, const char *data, size_t size, bool isEndOfMessages)
     {
       auto *startMsg = std::strstr(data, "G:");
@@ -371,6 +410,6 @@ TEST_CASE("COMMANDS", "[commands]")
     });
 
     TestHelper::waitForSuccess(futureGPN, streamPtr, 10);
+    disconnectManager();
   }
-
 }

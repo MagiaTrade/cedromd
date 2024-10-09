@@ -855,6 +855,7 @@ namespace cedro::md
     }
     else if (data.find("You are connected") != std::string::npos)
     {
+      logI << "You are connected received!";
       _stream = stream;
       _isConnected = true;
       cb(true, stream);
