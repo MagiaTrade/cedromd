@@ -25,9 +25,9 @@ namespace cedro::md
       return str.substr(first, last - first + 1);
     }
 
-    inline static bool copyUntilDelimiter(char *dest, const char *source, size_t maxSize)
+    inline static bool copyUntilDelimiter(char *dest, const char *source, size_t maxSize, char delimiter = ':')
     {
-      const char *end = std::strchr(source, ':');
+      const char *end = std::strchr(source, delimiter);
       if (end == nullptr)
         return false; // Não encontrou o delimitador
 
@@ -69,16 +69,17 @@ namespace cedro::md
       return true;
     };
 
-    inline static bool moveOn(const char *&currentPos)
+    inline static bool moveOn(const char *&currentPos, char delimiter = ':', bool shouldLogError = true)
     {
-      currentPos = std::strchr(currentPos, ':');
+      currentPos = std::strchr(currentPos, delimiter);
       if (currentPos == nullptr)
       {
-        logE << ("Unexpected end of data.");
+        if(shouldLogError)
+          logE << ("Unexpected end of data.");
         return false;
       }
 
-      currentPos++; // Skips the ':'
+      currentPos++; // Skips the delimiter
       return true;
     }
   };
