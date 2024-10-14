@@ -20,7 +20,14 @@ namespace cedro::md
 
   CMDBaseManager::~CMDBaseManager()
   {
-    logI << ("CMDBaseManager destructor");
+    if(_stream)
+    {
+      _stream->stop();
+      _stream.reset();
+    }
+
+    logI << ("[CMDBaseManager] Destructor");
+
     _bqtCallbacks.clear();
     _sqtCallbacks.clear();
     _sabCallbacks.clear();
@@ -59,14 +66,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "Failed to send SQT message";
+        std::string errorMsg = "[CMDBaseManager] Failed to send SQT message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length());
       }
       else
       {
         _sqtCallbacks[mgutils::string::toUpper(symbol)] = cb;
-        logI << ("Subscribed successfully");
+        logI << "[CMDBaseManager]  Subscribed successfully";
       }
     });
   }
@@ -85,12 +92,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send USQ message");
+        logE << "[CMDBaseManager] Failed to send USQ message";
         cb(false);
       }
       else
       {
-        logI << ("Unsubscribed successfully");
+        logI << "[CMDBaseManager] Unsubscribed successfully";
         auto it = _sqtCallbacks.find(symbol);
         if (it != _sqtCallbacks.end())
           _sqtCallbacks.erase(it);
@@ -111,14 +118,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "Failed to send BQT message";
+        std::string errorMsg = "[CMDBaseManager] Failed to send BQT message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length());
       }
       else
       {
         _bqtCallbacks[mgutils::string::toUpper(symbol)] = cb;
-        logI << ("Subscribed to book quote successfully");
+        logI << ("[CMDBaseManager] Subscribed to book quote successfully");
       }
     });
   }
@@ -137,12 +144,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send UBQ message");
+        logE << ("[CMDBaseManager] Failed to send UBQ message");
         cb(false);
       }
       else
       {
-        logI << ("Unsubscribed from book quote successfully");
+        logI << ("[CMDBaseManager] Unsubscribed from book quote successfully");
         auto it = _bqtCallbacks.find(symbol);
         if (it != _bqtCallbacks.end())
           _bqtCallbacks.erase(it);
@@ -170,14 +177,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "Failed to send SAB message";
+        std::string errorMsg = "[CMDBaseManager] Failed to send SAB message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length());
       }
       else
       {
         _sabCallbacks[mgutils::string::toUpper(symbol)] = cb;
-        logI << ("SAB - Subscribed successfully");
+        logI << ("[CMDBaseManager] SAB - Subscribed successfully");
       }
     });
   }
@@ -197,12 +204,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send UAB message");
+        logE << ("[CMDBaseManager] Failed to send UAB message");
         cb(false);
       }
       else
       {
-        logI << ("UAB - Unsubscribed successfully");
+        logI << ("[CMDBaseManager] UAB - Unsubscribed successfully");
         auto it = _sabCallbacks.find(symbol);
         if (it != _sabCallbacks.end())
           _sabCallbacks.erase(it);
@@ -223,14 +230,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "Failed to send GQT message";
+        std::string errorMsg = "[CMDBaseManager] Failed to send GQT message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length());
       }
       else
       {
         _gqtCallbacks[mgutils::string::toUpper(symbol)] = cb;
-        logI << ("GQT - Subscribed successfully");
+        logI << ("[CMDBaseManager] GQT - Subscribed successfully");
       }
     });
   }
@@ -262,14 +269,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "GQT(snap): Failed to send message";
+        std::string errorMsg = "[CMDBaseManager] GQT(snap): Failed to send message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length(), true);
       }
       else
       {
         _gqtSnapCallbacks[requestId] = cb;
-        logI << ("GQT(snap): Subscribed successfully");
+        logI << ("[CMDBaseManager] GQT(snap): Subscribed successfully");
       }
     });
   }
@@ -288,12 +295,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("UQT: Failed to send UAB message");
+        logE << ("[CMDBaseManager] UQT: Failed to send UAB message");
         cb(false);
       }
       else
       {
-        logI << ("UQT: Unsubscribed successfully");
+        logI << ("[CMDBaseManager] UQT: Unsubscribed successfully");
         auto it = _gqtCallbacks.find(symbol);
         if (it != _gqtCallbacks.end())
           _gqtCallbacks.erase(it);
@@ -320,14 +327,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "Failed to send GPN message";
+        std::string errorMsg = "[CMDBaseManager] Failed to send GPN message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length(), true);
       }
       else
       {
         _gpnCallbacks[mgutils::string::toUpper(marketName)]= cb;
-        logI << ("Requested player names successfully");
+        logI << ("[CMDBaseManager] Requested player names successfully");
       }
     });
   }
@@ -342,14 +349,14 @@ namespace cedro::md
     {
       if (!success)
       {
-        std::string errorMsg = "VAP(snap): Failed to send message";
+        std::string errorMsg = "[CMDBaseManager] VAP(snap): Failed to send message";
         logE << (errorMsg);
         cb(false, errorMsg.c_str(), errorMsg.length(), true, info.type);
       }
       else
       {
         _vapSnapCallbacks[info] = cb;
-        logI << ("VAP(snap): Subscribed successfully");
+        logI << ("[CMDBaseManager] VAP(snap): Subscribed successfully");
       }
     });
   }
@@ -392,7 +399,7 @@ namespace cedro::md
     if(!isValueSupported)
     {
       std::stringstream stm;
-      stm << "VAP minutes: " << lastMinutes << " not supported. Please use one of these values: [1, 2, 5, 10, 15, 30 , 60]";
+      stm << "[CMDBaseManager] VAP minutes: " << lastMinutes << " not supported. Please use one of these values: [1, 2, 5, 10, 15, 30 , 60]";
       auto errmsg = stm.str();
       logW << (errmsg);
       cb(false, errmsg.c_str(), errmsg.length(), true, info.type);
@@ -424,7 +431,7 @@ namespace cedro::md
     if(!isHistory)
     {
       std::stringstream stm;
-      stm << "VAP history: missing date. Please set a valid date range!";
+      stm << "[CMDBaseManager] VAP history: missing date. Please set a valid date range!";
       auto errmsg = stm.str();
       logW << (errmsg);
       cb(false, errmsg.c_str(), errmsg.length(), true, info.type);
@@ -449,7 +456,7 @@ namespace cedro::md
   {
     if(_isConnected)
     {
-      logW << ("Already connected!");
+      logW << ("[CMDBaseManager] Already connected!");
       cb(true, _stream);
       return;
     }
@@ -480,10 +487,13 @@ namespace cedro::md
 
   void CMDBaseManager::disconnect(const SuccessCallback& cb)
   {
+    logI << ("[CMDBaseManager] disconnect called!");
+
     if(!_isConnected)
     {
-      logW << ("Already disconnected!");
-      cb(false);
+      logW << "[CMDBaseManager] Already disconnected!";
+      if(cb)
+        cb(false);
       return;
     }
 
@@ -492,7 +502,8 @@ namespace cedro::md
       {
         _isConnected = false;
         reset();
-        cb(success);
+        if(cb)
+          cb(success);
       }
     );
   }
@@ -534,13 +545,13 @@ namespace cedro::md
     }
     else if ((prefix = std::strstr(data, "SYN")) != nullptr) // SYN
     {
-      logD << ("SYN: Sync message received!");
+      logD << ("[CMDBaseManager] SYN: Sync message received!");
       if(_heartBeatCallback)
         _heartBeatCallback();
     }
     else
     {
-      logW << ("Unhandled message type received: " + std::string(data, size));
+      logW << ("[CMDBaseManager] Unhandled message type received: " + std::string(data, size));
     }
   }
 
@@ -549,7 +560,7 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data);
     if (symbol.empty())
     {
-      logW << ("Could not extract symbol for SQT");
+      logW << ("[CMDBaseManager] Could not extract symbol for SQT");
       return;
     }
 
@@ -576,7 +587,7 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data);
     if (symbol.empty())
     {
-      logW << ("Could not extract symbol for BQT");
+      logW << ("[CMDBaseManager] Could not extract symbol for BQT");
       return;
     }
 
@@ -588,7 +599,7 @@ namespace cedro::md
 
     if(size + 1 > BQT_BUFFER_SIZE)
     {
-      logW << ("BQT message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] BQT message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -603,7 +614,7 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data);
     if (symbol.empty())
     {
-      logW << ("Could not extract symbol for SAB");
+      logW << ("[CMDBaseManager] Could not extract symbol for SAB");
       return;
     }
 
@@ -615,7 +626,7 @@ namespace cedro::md
 
     if(size + 1 > SAB_BUFFER_SIZE)
     {
-      logW << ("SAB message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] SAB message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -651,7 +662,7 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data);
     if (symbol.empty())
     {
-      logW << ("GQT: Could not extract symbol");
+      logW << ("[CMDBaseManager] GQT: Could not extract symbol");
       return;
     }
 
@@ -663,7 +674,7 @@ namespace cedro::md
 
     if(size + 1 > GQT_BUFFER_SIZE)
     {
-      logW << ("GQT: message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] GQT: message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -683,7 +694,7 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data);
     if (symbol.empty())
     {
-      logW << ("GQT: Could not extract symbol");
+      logW << ("[CMDBaseManager] GQT: Could not extract symbol");
       return;
     }
 
@@ -695,7 +706,7 @@ namespace cedro::md
 
     if(size + 1 > GQT_BUFFER_SIZE)
     {
-      logW << ("GQT: message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] GQT: message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -710,13 +721,13 @@ namespace cedro::md
     std::string market = extractSymbolFromMessage(data);
     if (market.empty())
     {
-      logW << ("GPN: Could not extract market name.");
+      logW << ("[CMDBaseManager] GPN: Could not extract market name.");
       return;
     }
 
     if(size + 1 > GPN_BUFFER_SIZE)
     {
-      logW << ("GPN: message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] GPN: message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -731,7 +742,7 @@ namespace cedro::md
     if (callbackIter == _gpnCallbacks.end())
     {
       std::stringstream stm;
-      stm << "GPN: callback no found for Market: " << market <<  std::string(data, size) << "\n";
+      stm << "[CMDBaseManager] GPN: callback no found for Market: " << market <<  std::string(data, size) << "\n";
       logW << (stm.str());
       return;
     }
@@ -748,13 +759,13 @@ namespace cedro::md
     std::string symbol = extractSymbolFromMessage(data, 4);
     if (symbol.empty())
     {
-      logW << ("VAP(snap): Could not extract symbol");
+      logW << ("[CMDBaseManager] VAP(snap): Could not extract symbol");
       return;
     }
 
     if(size + 1 > VAP_BUFFER_SIZE)
     {
-      logW << ("VAP(snap): message size exceeds buffer capacity. Ignoring it!");
+      logW << ("[CMDBaseManager] VAP(snap): message size exceeds buffer capacity. Ignoring it!");
       return;
     }
 
@@ -773,7 +784,7 @@ namespace cedro::md
     if (callbackIter == _vapSnapCallbacks.end())
     {
       std::stringstream stm;
-      stm << "VAP: callback no found for: "
+      stm << "[CMDBaseManager] VAP: callback no found for: "
           << info.symbol << " Type: "
           << info.type << "\n";
 
@@ -832,7 +843,7 @@ namespace cedro::md
 
     if (trimmedData.empty())
     {
-      logI << ("Received empty or irrelevant message");
+      logI << ("[CMDBaseManager] Received empty or irrelevant message");
       return;
     }
 
@@ -854,14 +865,17 @@ namespace cedro::md
     }
     else if (data.find("You are connected") != std::string::npos)
     {
-      logI << "You are connected received!";
+      logI << "[CMDBaseManager] You are connected received!";
+      if(_stream)
+        logI << "[CMDBaseManager] Stream ID " << _stream->getId() << " use count: " << _stream.use_count();
+
       _stream = stream;
       _isConnected = true;
       cb(true, stream);
     }
     else
     {
-      logI << "Useless message: " << data;
+      logI << "[CMDBaseManager] Useless message: " << data;
     }
   }
 
@@ -872,12 +886,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send soft key");
+        logE << ("[CMDBaseManager] Failed to send soft key");
         cb(false, nullptr);
       }
       else
       {
-        logI << ("Soft key sent successfully");
+        logI << ("[CMDBaseManager] Soft key sent successfully");
       }
     });
   }
@@ -889,12 +903,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send username");
+        logE << ("[CMDBaseManager] Failed to send username");
         cb(false, nullptr);
       }
       else
       {
-        logI << ("Username sent successfully");
+        logI << ("[CMDBaseManager] Username sent successfully");
       }
     });
   }
@@ -906,12 +920,12 @@ namespace cedro::md
     {
       if (!success)
       {
-        logE << ("Failed to send password");
+        logE << ("[CMDBaseManager] Failed to send password");
         cb(false, nullptr);
       }
       else
       {
-        logI << ("Password sent successfully");
+        logI << ("[CMDBaseManager] Password sent successfully");
       }
     });
   }
@@ -1004,13 +1018,13 @@ namespace cedro::md
 
     if(!isConnected())
     {
-      logE << ("Stream not connected!");
+      logE << ("[CMDBaseManager] Stream not connected!");
       return false;
     }
 
     if(symbol.empty())
     {
-      logE << ("Symbol is empty!");
+      logE << ("[CMDBaseManager] Symbol is empty!");
       return false;
     }
 
